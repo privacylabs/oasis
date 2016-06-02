@@ -1,18 +1,18 @@
 [submodule "roles/mail"]
 	path = roles/mail
-	url = git@github.com:privacylabs/ansible-mailstack
+	url = https://github.com/privacylabs/ansible-mailstack
 [submodule "roles/common"]
 	path = roles/common
-	url = git@github.com:privacylabs/ansible-common
+	url = https://github.com/privacylabs/ansible-common
 [submodule "roles/openldap"]
 	path = roles/openldap
-	url = git@github.com:privacylabs/ansible-openldap
+	url = https://github.com/privacylabs/ansible-openldap
 [submodule "roles/letsencrypt"]
 	path = roles/letsencrypt
-	url = git@github.com:privacylabs/ansible-letsencrypt
+	url = https://github.com/privacylabs/ansible-letsencrypt
 [submodule "roles/tunnel"]
 	path = roles/tunnel
-	url = git@github.com:privacylabs/ansible-tunnel
+	url = https://github.com/privacylabs/ansible-tunnel
 [submodule "roles/calendarserver"]
 	path = roles/calendarserver
-	url = git@github.com:privacylabs/ansible-calendarserver
+	url = https://github.com/privacylabs/ansible-calendarserver
