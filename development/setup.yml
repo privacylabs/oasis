@@ -1,0 +1,44 @@
+---
+- hosts: default
+
+  vars:
+    temp_client_pubkey_file: "~/.ansible/tmp/temp_client_pubkey_file.pub"
+
+  tasks:
+    - name: generate ssh key if it doesn't exist
+      user:
+        name: vagrant
+        generate_ssh_key: yes
+
+    - name: copy raspberry pi public ssh key to temp location
+      command: "cp ~/.ssh/id_rsa.pub {{temp_client_pubkey_file}}"
+
+    - name: add backport
+      apt_repository:
+        repo: "deb http://ftp.debian.org/debian jessie-backports main"
+        state: present
+        update_cache: yes
+      become: yes
+
+    - name: install packages
+      apt:
+        name: '{{ item }}'
+        state: latest
+        default_release: "jessie-backports"
+      become: yes
+      with_items: ['ansible']
+
+    - name: install python packages
+      apt:
+        name: '{{ item }}'
+        state: latest
+      become: yes
+      with_items: ['python-pip']
+
+    - name: install boto
+      pip:
+        name: '{{ item }}'
+        state: latest
+      become: yes
+      with_items: ['boto']
+

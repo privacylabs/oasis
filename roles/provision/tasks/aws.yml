@@ -1,0 +1,160 @@
+- name: Remove ec2 key for gateway if it already exists
+  ec2_key:
+    name: "{{domain}}-gateway-key"
+    state: absent
+
+- name: Install key for gateway
+  ec2_key:
+    name: "{{domain}}-gateway-key"
+    key_material: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+- name: Security group for gateway
+  ec2_group:
+    name: gateway-security-group
+    description: security group for gateway instance
+    rules:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 25
+        to_port: 25
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 587
+        to_port: 587
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 993
+        to_port: 993
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 8443
+        to_port: 8443
+        cidr_ip: 0.0.0.0/0
+    rules_egress:
+      - proto: -1
+        from_port: 0
+        to_port: 0
+        cidr_ip: 0.0.0.0/0
+
+- name: Gather facts about ec2 instances
+  ec2_remote_facts:
+    filters:
+      "tag:Name": "{{ domain }}-gateway"
+  register: instance
+
+- name: Terminate gateway instances
+  ec2:
+    instance_id: '{{ item.id }}'
+    wait: true
+    zone: us-west-2a
+    state: absent
+  with_items: '{{ instance.instances }}'
+  when: terminate_gateway is defined
+
+- name: Launch gateway instance
+  ec2:
+    key_name: "{{ domain }}-gateway-key"
+    group: gateway-security-group
+    instance_type: t2.nano
+    instance_tags: { "Name": "{{ domain }}-gateway" }
+    exact_count: 1
+    count_tag: { "Name": "{{ domain }}-gateway" }
+# debian    image: ami-d0f506b0
+    image: ami-704ab610
+    wait: true
+    zone: us-west-2a
+  register: gateway_instance
+
+- name: Attach EIP to internal instance
+  ec2_eip:
+    device_id: "{{ gateway_instance.tagged_instances[0].id }}"
+  register: auto_generated_eip
+  when: public_ip is undefined
+
+- name: Attach EIP to an existing elastic ip address
+  ec2_eip:
+    device_id: "{{ gateway_instance.tagged_instances[0].id }}"
+    public_ip: "{{ public_ip }}"
+  register: not_auto_generated_eip
+  when: public_ip is defined
+
+- set_fact: gateway_eip="{{ auto_generated_eip if auto_generated_eip.public_ip is defined else not_auto_generated_eip }}"
+
+- name: Create route53 hosted zone
+  route53_zone: zone="{{ domain }}" state=present
+
+- name: Create dns record for mail.domain
+  route53:
+    command: create
+    zone: "{{ domain }}"
+    record: "mail.{{ domain }}"
+    type: A
+    ttl: 600
+    value: "{{ gateway_eip.public_ip }}"
+    overwrite: yes
+
+- name: Create mx record for mail.domain
+  route53:
+    command: create
+    zone: "{{ domain }}"
+    record: "{{ domain }}"
+    type: MX
+    ttl: 600
+    value: "10 mail.{{domain}}"
+
+- name: Wait for SSH
+  wait_for: host={{ gateway_eip.public_ip }} port=22 delay=5 timeout=150 state=started
+
+- include: keys.yml
+
+- name: Create SPF record
+  route53:
+    command: create
+    zone: "{{ domain }}"
+    record: "{{ domain }}"
+    type: TXT
+    ttl: 600
+    value: '"v=spf1 ip4:{{ gateway_eip.public_ip }} -all"'
+    overwrite: yes
+
+- name: Create DKIM record
+  route53:
+    command: create
+    zone: "{{ domain }}"
+    record: "mail._domainkey.{{ domain }}"
+    type: TXT
+    ttl: 600
+    value: '"v=DKIM1; k=rsa; p={{ dkim_dns.stdout }}"'
+    overwrite: yes
+
+- name: Create DMARC record
+  route53:
+    command: create
+    zone: "{{ domain }}"
+    record: "_dmarc.{{ domain }}"
+    type: TXT
+    ttl: 600
+    value: '"v=DMARC1; p=reject; rua=mailto:postmaster@{{ domain }}; fo=0:d:s; adkim=r; aspf=r; pct=100; rf=afrf; sp=reject"'
+
+- name: Create DMARC/DKIM policy
+  route53:
+    command: create
+    zone: "{{ domain }}"
+    record: "_adsp._domainkey.{{ domain }}"
+    type: TXT
+    ttl: 600
+    value: '"dkim=all"'
+
+- name: Add new instance to hosts
+  add_host: hostname=gateway ansible_host={{ gateway_eip.public_ip }} ansible_user='ubuntu'

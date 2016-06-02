@@ -1,0 +1,38 @@
+---
+  - name: make sure sendmail is removed
+    package:
+      name: sendmail
+      state: absent
+    become: yes
+
+  - name: add gateway client pub key to root user authorized_keys file
+    authorized_key:
+      key: "{{ client_pub_key }}"
+      user: root
+    become: yes
+
+  - name: add gateway client pub key to ubuntu user authorized_keys file
+    authorized_key:
+      key: "{{ client_pub_key }}"
+      user: "{{ ansible_user }}"
+    become: yes
+
+  - name: copy sshd config
+    copy:
+      src: sshd_config
+      dest: /etc/ssh/sshd_config
+    become: yes
+
+  - name: restart sshd
+    service:
+      name: sshd
+      state: restarted
+    become: yes
+    when: ansible_distribution == 'Debian'
+
+  - name: restart sshd
+    service:
+      name: ssh
+      state: restarted
+    become: yes
+    when: ansible_distribution == 'Ubuntu'

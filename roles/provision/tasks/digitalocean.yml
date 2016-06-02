@@ -1,0 +1,29 @@
+- name: Add ssh pub key to digitalocean account
+  digital_ocean:
+    state: active
+    command: ssh
+    name: my_ssh_key
+    ssh_pub_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+    api_token: "{{ digital_ocean_api_token }}"
+  register: result
+
+- debug: var=result
+
+- name: Make sure the gateway image exists
+  digital_ocean: >
+    state=present
+    command=droplet
+    name="mail.{{ domain }}"
+    unique_name=yes
+    api_token="{{ digital_ocean_api_token }}"
+    size_id=512mb
+    region_id=sfo1
+    image_id=15943510
+    ssh_key_ids={{ result.ssh_key.id }}
+    wait_timeout=500
+  register: drop
+
+- debug: var=drop
+
+- name: Add new digital ocean instance as gateway host
+  add_host: hostname=gateway ansible_host={{ drop.droplet.ip_address }} ansible_user='root'

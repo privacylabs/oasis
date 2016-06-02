@@ -1,0 +1,36 @@
+---
+- hosts: localhost
+  environment:
+    AWS_DEFAULT_REGION: "{{ aws_region }}"
+    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
+    AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
+  roles:
+    - provision
+
+- hosts: gateway
+  vars:
+    fail2ban_postfix: false
+    fail2ban_dovecot: false
+    client_pub_key: "{{ lookup('file', '~/.ansible/tmp/temp_client_pubkey_file.pub') }}"
+  roles:
+    - gateway
+
+- hosts: pi
+  vars:
+    host_domains: 'mail.{{domain}}'
+    ldap_ip: '127.0.0.1'
+    tls_cert_file_location: '/etc/letsencrypt/live/{{ host_domains.split(", ")[0] }}/fullchain.pem'
+    tls_key_file_location: '/etc/letsencrypt/live/{{ host_domains.split(", ")[0] }}/privkey.pem'
+    fail2ban_postfix: true
+    fail2ban_dovecot: true
+    ldap_user_searchbase: '{{ "ou=people,dc=" + domain.split(".") | join(",dc=") }}'
+    ldap_service_searchbase: '{{ "ou=services,dc=" + domain.split(".") | join(",dc=") }}'
+    autossh: true
+    sshuttle: true
+  roles:
+    - common
+    - tunnel
+    - letsencrypt
+    - openldap
+    - mail
+    - calendarserver

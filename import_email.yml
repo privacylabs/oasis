@@ -1,0 +1,23 @@
+---
+- hosts: pi
+  vars:
+    imapc_host: 'imap.gmail.com'
+    imapc_user: 'user@gmail.com'
+    imapc_password: 'password'
+    dest_email: 'user@newdomain.com'
+    migration_type: 'sync' #backup
+    # DO NOT EDIT BELOW THIS LINE
+    imapc_features: "'rfc822.size fetch-headers'"
+    mail_prefetch_count: '20'
+    imapc_port: '993'
+    imapc_ssl: 'imaps'
+    imapc_ssl_ca_dir: '/etc/ssl'
+    imapc_ssl_verify: 'no'
+    account: '-o imapc_host={{ imapc_host }} -o imapc_user={{imapc_user}} -o imapc_password={{imapc_password}}'
+    server: '-o imapc_port={{imapc_port}} -o imapc_ssl={{imapc_ssl}} -o imapc_ssl_ca_dir={{imapc_ssl_ca_dir}} -o imapc_ssl_verify={{imapc_ssl_verify}}'
+    features: '-o imapc_features={{imapc_features}} -o mail_prefetch_count={{mail_prefetch_count}}'
+
+  tasks:
+    - name: migrate email
+      shell: 'doveadm -o mail_fsync=never {{ account }} {{ features }} {{ server }} {{migration_type}} -1 -R -u {{ dest_email }} imapc:'
+      become: yes
