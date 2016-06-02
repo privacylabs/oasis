@@ -1,12 +1,12 @@
 # Overview
 
-Mailshuttle automates the setup of a raspberrypi email server meant to run from
+Oasis automates the setup of a raspberrypi email server meant to run from
 inside your home.  In this environment ISPs and user equipment can make it
 difficult to externally reach home based email servers due to port blocking.
 Also, in most cases it's expensive to obtain a static IP address which is
 necessary to successfully run a mail server.
 
-To work around these issues mailshuttle provisions a cloud based component that
+To work around these issues oasis provisions a cloud based component that
 acts as a gateway to your home based raspberrypi server.  This cloud component
 is stateless and all data received is immediately forwarded to your pi for
 safe storage of your data.
@@ -48,7 +48,7 @@ safe storage of your data.
 
 # Choosing a Cloud Provider
 
-Mailshuttle works with both AWS and Digital Ocean, however, AWS is more
+Oasis works with both AWS and Digital Ocean, however, AWS is more
 fully supported.  The ansible scripts will automatically setup required DNS
 settings with AWS.  DNS settings on Digital Ocean require more manual steps.
 
