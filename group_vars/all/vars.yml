@@ -19,6 +19,6 @@ emailusers:
     uidnumber: 10001
     gidnumber: 5000
     fullname: First Last
-terminate_gateway: yes
-public_ip: '52.32.161.200'
-letsencrypt_staging: yes
+#terminate_gateway: yes
+#public_ip: ''
+#letsencrypt_staging: yes
