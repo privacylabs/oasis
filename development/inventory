@@ -6,14 +6,14 @@ localhost
 
 [all:vars]
 cloud='aws'
-aws_region="us-west-2" # ["us-west-2", etc]
-aws_access_key="AKIAJHJL5CZFMUPL6F6A"
-aws_secret_key="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"
-public_ip='52.32.161.200'
+aws_region="" # ["us-west-2", etc]
+aws_access_key=""
+aws_secret_key=""
+public_ip=''
 preserve_keys=true
 digital_ocean_api_token=''
-domain='girisreenivas.com'
+domain='domain.com'
 host_domains='mail.{{domain}}'
 admin_email='YOURNAME@{{domain}}'
-ldapadminpassword='admin'
+ldapadminpassword=''
 ldap_ip='127.0.0.1'
