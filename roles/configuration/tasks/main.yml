@@ -1,0 +1,58 @@
+---
+  - name: check to see if a vault exists
+    stat:
+      path: ./files/vault.encrypted
+    register: vault_file
+
+  - include: user_input.yml
+    when: vault_file.stat.exists != true
+
+  - name: decrypt vault to a file
+    command: ansible-vault decrypt ./files/vault.encrypted --output=./files/vault.decrypted
+    when: vault_file.stat.exists
+
+  - name: read in variables
+    include_vars: ./files/vault.decrypted
+
+    # set all variables for deployment here
+  - name: set host facts
+    set_fact:
+      aws_access_key: '{{ vault_aws_access_key }}'
+      aws_secret_key: '{{ vault_aws_secret_key }}'
+      ldapadminpassword: '{{ vault_ldapadminpassword }}'
+      caldavduserpassword: '{{ vault_caldavduserpassword }}'
+      postfixuserpassword: '{{ vault_postfixuserpassword }}'
+      domain: '{{ vault_domain }}'
+      admin_email: '{{ vault_username }}@{{ vault_domain }}'
+      ldap_org_name: '{{ vault_first_name }} {{ vault_last_name }}'
+      emailusers:
+        - username: '{{ vault_username }}'
+          lastname: '{{ vault_last_name }}'
+          firstname: '{{ vault_first_name }}'
+          password: '{{ vault_password }}'
+          uidnumber: 10001
+          gidnumber: 5000
+          fullname: '{{ vault_first_name }} {{ vault_last_name }}'
+
+  # - debug: msg="{{ user_domain }} {{ first_name }} {{ last_name }} {{ username }} {{ password1 }} {{ password2 }}"
+
+  - name: encrypt vault
+    command: ansible-vault encrypt ./files/vault.decrypted --output ./files/vault.encrypted
+    when: vault_file.stat.exists != true
+
+  - name: delete decrypted
+    file:
+      path: ./files/vault.decrypted
+      state: absent
+
+  - name: generate ssh key if it doesn't exist
+    user:
+      name: pi
+      generate_ssh_key: yes
+      ssh_key_type: rsa
+      ssh_key_bits: 2048
+
+  - name: copy raspberry pi public ssh key to temp location
+    copy:
+      dest: ~/.ansible/tmp/temp_client_pubkey_file.pub
+      src: ~/.ssh/id_rsa.pub

@@ -1,4 +1,8 @@
 ---
+- hosts: pi
+  roles:
+    - configuration
+
 - hosts: localhost
   environment:
     AWS_DEFAULT_REGION: "{{ aws_region }}"

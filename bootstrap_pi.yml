@@ -9,13 +9,13 @@
       user:
         name: pi
         generate_ssh_key: yes
-        ssh_key_type: ecdsa
-        ssh_key_bits: 521
+        ssh_key_type: rsa
+        ssh_key_bits: 2048
 
     - name: copy raspberry pi public ssh key to temp location
       fetch:
         dest: "{{ temp_client_pubkey_file }}"
-        src: ~/.ssh/id_ecdsa.pub
+        src: ~/.ssh/id_rsa.pub
         fail_on_missing: yes
         flat: yes
 

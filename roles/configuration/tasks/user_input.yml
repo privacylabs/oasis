@@ -1,0 +1,80 @@
+---
+  - name: Domain not configured
+    pause:
+      prompt: "Please set your domain"
+    register: input_domain
+    until: input_domain.user_input != ""
+
+  - name: First name is not configured
+    pause:
+      prompt: "Please enter your first name"
+    register: input_first_name
+    until: input_first_name.user_input != ""
+
+  - name: Last name is not configured
+    pause:
+      prompt: "Please enter your last name"
+    register: input_last_name
+    until: input_last_name.user_input != ""
+
+  - name: Email username is not configured
+    pause:
+      prompt: "Please enter your username (e.g.: user if your desired email address is user@domain.com)"
+    register: input_username
+    until: input_username.user_input != ""
+
+  - name: Email account password not configured
+    pause:
+      prompt: "Please enter your password"
+    register: input_password1
+    until: input_password1.user_input != ""
+
+  - name: Please confirm your desired password for your email account
+    pause:
+      prompt: "Please confirm your password"
+    register: input_password2
+    until: input_password2.user_input == input_password1.user_input
+
+  - name: AWS access key is not set
+    pause:
+      prompt: "Please set your AWS access key"
+    register: input_aws_access_key
+    until: input_aws_access_key.user_input != ""
+
+  - name: AWS secret key is not set
+    pause:
+      prompt: "Please set your AWS secret key"
+    register: input_aws_secret_key
+    until: input_aws_secret_key.user_input != ""
+
+  - name: generate LDAP admin password
+    shell: openssl rand -base64 20
+    register: ldap
+
+  - name: generate caldavd password
+    shell: openssl rand -base64 20
+    register: caldavd
+
+  - name: generate postfix admin password
+    shell: openssl rand -base64 20
+    register: postfix
+
+  - name: write vars to decrypted vault
+    lineinfile:
+      dest: ./files/vault.decrypted
+      create: yes
+      regexp: "{{ item.regexp }}"
+      line: "{{ item.line }}"
+      state: present
+    with_items:
+      - { regexp: '^--', line: '---'}
+      - { regexp: '^vault_domain', line: "vault_domain: '{{ input_domain.user_input }}'" }
+      - { regexp: '^vault_first_name', line: "vault_first_name: '{{ input_first_name.user_input }}'" }
+      - { regexp: '^vault_last_name', line: "vault_last_name: '{{ input_last_name.user_input }}'" }
+      - { regexp: '^vault_username', line: "vault_username: '{{ input_username.user_input }}'" }
+      - { regexp: '^vault_password', line: "vault_password: '{{ input_password2.user_input }}'" }
+      - { regexp: '^vault_aws_access_key', line: "vault_aws_access_key: '{{ input_aws_access_key.user_input }}'" }
+      - { regexp: '^vault_aws_secret_key', line: "vault_aws_secret_key: '{{ input_aws_secret_key.user_input }}'" }
+      - { regexp: '^vault_ldapadminpassword', line: "vault_ldapadminpassword: '{{ ldap.stdout }}'"}
+      - { regexp: '^vault_caldavduserpassword', line: "vault_caldavduserpassword: '{{ caldavd.stdout }}'"}
+      - { regexp: '^vault_postfixuserpassword', line: "vault_postfixuserpassword: '{{ postfix.stdout }}'"}

@@ -1,24 +1,8 @@
 ---
 cloud: 'aws'
 aws_region: 'us-west-2'
-aws_access_key: '{{vault_aws_access_key}}'
-aws_secret_key: '{{vault_aws_secret_key}}'
 digital_ocean_api_token: ''
-domain: 'yourdomain.com'
-admin_email: 'user@{{domain}}'
 preserve_keys: true
-ldap_org_name: 'Your Name'
-ldapadminpassword: '{{vault_ldapadminpassword}}'
-caldavduserpassword: '{{ vault_caldavduserpassword }}'
-postfixuserpassword: '{{ vault_postfixuserpassword }}'
-emailusers:
-  - username: user
-    lastname: Last
-    firstname: First
-    password: '{{vault_userpassword}}'
-    uidnumber: 10001
-    gidnumber: 5000
-    fullname: First Last
 #terminate_gateway: yes
 #public_ip: ''
 #letsencrypt_staging: yes
