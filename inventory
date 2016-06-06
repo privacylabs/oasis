@@ -1,4 +1,4 @@
 localhost ansible_connection=local
 
 [pi]
-sigurdson.local ansible_user=pi
+localhost ansibile_connection=local
