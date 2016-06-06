@@ -16,6 +16,7 @@
     - gateway
 
 - hosts: pi
+  gather_facts: true
   vars:
     host_domains: 'mail.{{domain}}'
     ldap_ip: '127.0.0.1'
