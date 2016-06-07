@@ -1,79 +1,84 @@
 # Overview
 
-Oasis automates the setup of a raspberrypi email server meant to run from
-inside your home.  In this environment ISPs and user equipment can make it
-difficult to externally reach home based email servers due to port blocking.
+Oasis automates the setup of a Raspberry Pi email server meant to run from
+inside your home.  In the home environment, ISPs and user equipment can make it
+difficult to externally reach home-based email servers due to port blocking.
 Also, in most cases it's expensive to obtain a static IP address which is
 necessary to successfully run a mail server.
 
-To work around these issues oasis provisions a cloud based component that
-acts as a gateway to your home based raspberrypi server.  This cloud component
+To work around these issues Oasis provisions a cloud-based component that
+acts as a gateway to your home-based Raspberry Pi server.  This cloud component
 is stateless and all data received is immediately forwarded to your pi for
-safe storage of your data.
-
+safe storage.
 
 
 # Prerequisites
 
-1. A registered domain
-1. An account with AWS or Digital Ocean
-1. For AWS your AWS_ACCESS_KEY and AWS_SECRET_ACCESS_KEY
-1. For Digital Ocean your APIKEY
-1. Raspberry Pi 3
-1. Micro sdcard, recommend 32GB class 10
+## Materials
 
+1. Raspberry Pi 3 + microUSB Cable + Ethernet cable
+1. MicroSD card, 32GB Class 10 minimum recommended, with SD card reader/adapter
+
+## Windows Users
+
+We recommend that you install putty so you have a good ssh client to access your Pi. Putty is available here: http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html (choose putty.exe, putty.zip or the MSI installer). Launch putty.exe to have an open terminal for all the commands specified below.
+
+## Preparing the Pi
+
+1. Download Raspbian Jessie Lite (https://www.raspberrypi.org/downloads/raspbian/)
+1. Flash your microSD card with Raspbian Jessie Lite (https://www.raspberrypi.org/documentation/installation/installing-images/README.md)
+1. Insert the microSD card into the microSD card socket on the bottom of the Pi
+1. Connect your Pi to your router using an Ethernet Cable
+1. Connect your Pi to your laptop using a microUSB cable or to a power plug
+1. Log into your Pi - `$ ssh pi@raspberrypi.local` - the default password is 'raspberry'
+1. Change your password to a secure password - `$ passwd`
+  * We recommend using a password manager for generating and storing strong passwords
+1. Configure wifi on your Pi (https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md)
+1. Install prerequisites:
+  * `$ sudo apt-get update`
+  * `$ sudo apt-get upgrade (reboot if necessary)`
+  * `$ sudo apt-get install python-pip python-crypto libffi-dev libssl-dev python-dev python-yaml git`
+  * `$ sudo pip install markupsafe`
+  * `$ sudo pip install cryptography --upgrade`
+  * `$ sudo pip install boto`
+  * `$ sudo pip install ansible --upgrade` (You may see an error about libyaml, but if you can run `$ ansible --version` successfully, you're all set)
+
+## Preparing your cloud configuration
+
+1. Register a domain that will be used for email (e.g.: cooldomain.net)
+  * We suggest using Amazon Web Services (AWS) to skip configuring manually configuring DNS
+  * If you are using a domain registered with another service it is likely not using AWS for DNS and you will need to configure your domain to use AWS DNS services  (http://docs.aws.amazon.com/Route53/latest/DeveloperGuide/MigratingDNS.html)
+1. Create an account with AWS - sign up for 1 year of free tier services (https://aws.amazon.com/free/)
+  * If you want to use the free tier service, you will need to edit group_vars/all/vars.yml and set instance_size to 't2.micro'. After your free service is over, this instance size will cost ~$10/month. You can automatically switch to a smaller instance that costs ~$5/month by changing the value back to 't2.nano' and re-running the playbook.
+  * If you already have an AWS account and have exhausted your free services, the services required to support Oasis are a t2.nano instance and a hosted zone. We estimate charges to be ~$5-6/month for a t2.nano with DNS services.
+1. In the AWS console, go to Identity Access and Management (IAM) and create a user account and save the credentials for the account (AWS_ACCESS_KEY and AWS_SECRET_ACCESS_KEY). (http://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console) You will need to assign the following permissions to the user under Managed Policies ()
+  * AmazonEC2FullAccess
+  * AmazonRoute53FullAccess
+1. Submit a request to Amazon to get reverse DNS support. This will help ensure mail deliverability. Your elastic IP address will be available in group_vars/all/vars.yml after you have completed the Quickstart section below. The reverse DNS record is mail.cooldomain.net where you replace cooldomain.net with your custom domain. For the Use Case Description section the form, you can enter "personal email gateway". (https://aws-portal.amazon.com/gp/aws/html-forms-controller/contactus/ec2-email-limit-rdns-request)
 
 
 # Quickstart
 
-1. [PC] Download the latest version of raspbian
-1. [PC] Flash raspbian image to sdcard (https://www.raspberrypi.org/documentation/installation/installing-images/README.md)
-1. [PI] Insert sdcard in to sdcard socket on raspberry pi
-1. [PI] Power and connect pi to your local network
-1. [PC] Install ansible
-1. [PC] Clone this repository
-1. [PC] `$ ssh pi@raspberrypi.local` - ssh to your pi, default password 'raspberry':
-1. [PI] `$ passwd` - change the default password to your own
-1. [PI] `$ raspi-config` - expand filesystem and reboot
-1. [PC] `$ ansible-playbook -i inventory bootstrap_pi.yml -k` - when prompted enter the password you created previously
-1. [PC] Modify ansible variables found in group_vars/all/vars.yml file to match your desired options and settings
-1. [PC] Generate random passwords for services to copy into your vault (see below)
-1. [PC] `ansible-playbook -i inventory bootstrap_pw.yml`
-1. [PC] Create an ansible vault in group_vars/all named vault.yml to hold sensitive variables
-1. [PC] `ansible-vault create group_vars/all/vault.yml`
-1. [PC] Add vault_ variables referred to in group_vars/all/vars.yml to vault.yml
-1. [PC] `$ ansible-playbook -i inventory site.yml --ask-vault-pass`
+1. Log into your Pi - `$ ssh pi@raspberrypi.local`
+1. Clone this repository - `$ git clone https://github.com/privacylabs/oasis --recursive`
+1. `$ cd oasis`
+1. Run the playbooks - `$ ansible-playbook -i inventory site.yml`
+1. When prompted, enter responses for the following values (there is a bug in Ansible 2.x which prevents responses from showing in the terminal as you type)
+  * Domain - (e.g.: cooldomain.net)
+  * First Name (e.g.: Louis)
+  * Last Name (e.g.: Brandeis)
+  * Username - (e.g. louis, creates the email address louis@cooldomain.net)
+  * Password - We recommend using a password manager for generating and storing strong passwords
+  * Confirm Password
+  * AWS Access Key
+  * AWS Secret Access Key
+1. After the last prompt, you will soon be prompted to accept the SSH key for the gateway. Type 'yes' and press 'Enter'
+1. After the execution is complete, your Pi will reboot. Your ssh session may hang so you will need to close the terminal.
+1. Configure your mail (IMAP), calendar (CalDAV) and contacts (CardDAV) clients as follows from values you input when prompted during the install:
+  * username: louis
+  * password: strong_password_here
+  * server: mail.cooldomain.net
 
-
-
-# Choosing a Cloud Provider
-
-Oasis works with both AWS and Digital Ocean, however, AWS is more
-fully supported.  The ansible scripts will automatically setup required DNS
-settings with AWS.  DNS settings on Digital Ocean require more manual steps.
-
-
-
-# Variables
-
-```yaml
-- vars:
-  cloud: [aws|digitalocean] # use aws or digitalocean
-  aws_region: [us-west-2, etc] # aws region where to deploy
-  aws_access_key: # access key for your aws account, should go in your vault
-  aws_secret_key: # secret key for your aws account, should go in your vault
-  digital_ocean_api_token: YOUR_DIGITAL_OCEAN_API_TOKEN, should go in your vault
-  domain: domain.com # your registered domain that will be used for email
-  admin_email: # should be username @ your domain
-  preserve_keys: # if defined will preserve generated diffie hellman key on your ansible host
-  ldap_org_name: # whatever you want to call your organization
-  ldapadminpassword: # root password for openldap, should be stored in your vault
-  caldavduserpassword: # password for calendserver to work with ldap
-  postfixuserpassword: # password for postfix to work with ldap
-  terminate_gateway: # if defined will always terminate and restart the gateway instance when running playbook
-  public_ip: # the first time you run the playbook a public ip will be auto generated and so this should be undefined
-  letsencrypt_staging: # if defined will use the staging host for obtaining certificates
-```
 
 # Development
 
