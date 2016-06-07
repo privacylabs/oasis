@@ -5,11 +5,11 @@
   command: openssl rsa -in ~/.ansible/tmp/mail.private -out ~/.ansible/tmp/mail.public -pubout -outform PEM
 
 - name: check if DH key exists
-  stat: path=~/.ansible/tmp/dh_2048.pem
+  stat: path=~/.ansible/tmp/dh_1024.pem
   register: dhkey
 
 - name: create DH keys for PFS
-  shell: openssl dhparam -2 -out dh_2048.pem 2048 chdir=~/.ansible/tmp/
+  shell: openssl dhparam -2 -out dh_1024.pem 1024 chdir=~/.ansible/tmp/
   when: dhkey.stat.exists == false
 
 - name: extract public key value
@@ -28,12 +28,12 @@
   register: dkim_dns
 
 - name: load files into variables
-  command: "cat ~/.ansible/tmp/dh_2048.pem"
+  command: "cat ~/.ansible/tmp/dh_1024.pem"
   register: dh_keys
 
 - name: delete files
   file:
     name: "~/.ansible/tmp/{{ item }}"
     state: absent
-  with_items: [ 'mail.private', 'mail.public', 'mail.dns', 'dh_2048.pem' ]
+  with_items: [ 'mail.private', 'mail.public', 'mail.dns', 'dh_1024.pem' ]
   when: preserve_keys is undefined
