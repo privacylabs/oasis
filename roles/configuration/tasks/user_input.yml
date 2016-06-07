@@ -1,7 +1,7 @@
 ---
   - name: Domain not configured
     pause:
-      prompt: "Please set your domain"
+      prompt: "Please enter your domain"
     register: input_domain
     until: input_domain.user_input != ""
 
@@ -25,7 +25,7 @@
 
   - name: Email account password not configured
     pause:
-      prompt: "Please enter your password"
+      prompt: "Please set your password"
     register: input_password1
     until: input_password1.user_input != ""
 
@@ -37,13 +37,13 @@
 
   - name: AWS access key is not set
     pause:
-      prompt: "Please set your AWS access key"
+      prompt: "Please enter your AWS access key"
     register: input_aws_access_key
     until: input_aws_access_key.user_input != ""
 
   - name: AWS secret key is not set
     pause:
-      prompt: "Please set your AWS secret key"
+      prompt: "Please enter your AWS secret key"
     register: input_aws_secret_key
     until: input_aws_secret_key.user_input != ""
 
