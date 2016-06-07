@@ -72,7 +72,9 @@ We recommend that you install putty so you have a good ssh client to access your
   * Confirm Password
   * AWS Access Key
   * AWS Secret Access Key
-1. After the last prompt, you will soon be prompted to accept the SSH key for the gateway. Type 'yes' and press 'Enter'
+1. You will be prompted to specify a vault password. The vault password is used to encrypt the information you provided in the prompts above, along with some randomly generated passwords.
+  * We recommend using a password manager for generating and storing strong passwords
+1. After the vault password prompt, you will soon be prompted to accept the SSH key for the gateway. Type 'yes' and press 'Enter'
 1. After the execution is complete, your Pi will reboot. Your ssh session may hang so you will need to close the terminal.
 1. Configure your mail (IMAP), calendar (CalDAV) and contacts (CardDAV) clients as follows from values you input when prompted during the install:
   * username: louis
