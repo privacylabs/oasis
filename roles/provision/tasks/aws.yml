@@ -66,7 +66,7 @@
   ec2:
     key_name: "{{ domain }}-gateway-key"
     group: gateway-security-group
-    instance_type: t2.nano
+    instance_type: "{{ aws_instance_type }}"
     instance_tags: { "Name": "{{ domain }}-gateway" }
     exact_count: 1
     count_tag: { "Name": "{{ domain }}-gateway" }
@@ -80,6 +80,13 @@
   ec2_eip:
     device_id: "{{ gateway_instance.tagged_instances[0].id }}"
   register: auto_generated_eip
+  when: public_ip is undefined
+
+- name: Update group_vars with auto generated elastic ip address
+  lineinfile:
+    dest: ./group_vars/all/vars.yml
+    regexp: '^public_ip'
+    line: "public_ip: {{ auto_generated_eip.public_ip }}"
   when: public_ip is undefined
 
 - name: Attach EIP to an existing elastic ip address
