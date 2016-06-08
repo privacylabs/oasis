@@ -59,6 +59,17 @@
     shell: openssl rand -base64 20
     register: postfix
 
+  - debug: msg= "{{ item }}"
+    with_items:
+      - "Your domain: {{ input_domain.user_input }}"
+      - "Your name: {{ input_first_name.user_input }} {{ input_last_name.user_input }}"
+      - "Your username: {{ input_username.user_input }}"
+      - "Your AWS Access Key: {{ input_aws_access_key.user_input }}"
+      - "Your AWS Secret Access: {{ input_aws_secret_key.user_input }}"
+
+  - name: Review entered values - are they correct? Ctrl+C, then 'a' to abort
+    pause:
+
   - name: write vars to decrypted vault
     lineinfile:
       dest: ./files/vault.decrypted
@@ -78,3 +89,4 @@
       - { regexp: '^vault_ldapadminpassword', line: "vault_ldapadminpassword: '{{ ldap.stdout }}'"}
       - { regexp: '^vault_caldavduserpassword', line: "vault_caldavduserpassword: '{{ caldavd.stdout }}'"}
       - { regexp: '^vault_postfixuserpassword', line: "vault_postfixuserpassword: '{{ postfix.stdout }}'"}
+    no_log: true
