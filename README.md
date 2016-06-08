@@ -23,6 +23,10 @@ safe storage.
 
 We recommend that you install putty so you have a good ssh client to access your Pi. Putty is available here: http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html (choose putty.exe, putty.zip or the MSI installer). Launch putty.exe to have an open terminal for all the commands specified below.
 
+## Linux Users
+
+We have tested Ubuntu 14.04 and 16.04. Please install avahi-daemon for discovering the Pi on the network - `$ sudo apt-get install avahi-daemon`
+
 ## Preparing the Pi
 
 1. Download Raspbian Jessie Lite (https://www.raspberrypi.org/downloads/raspbian/)
@@ -45,14 +49,14 @@ We recommend that you install putty so you have a good ssh client to access your
 
 ## Preparing your cloud configuration
 
-1. Register a domain that will be used for email (e.g.: cooldomain.net)
-  * We suggest using Amazon Web Services (AWS) to skip manually configuring DNS. You will receive an email asking to verify your registration - click the link in the email.
-  * If you are using a domain registered with another service it is likely not using AWS for DNS and you will need to configure your domain to use AWS DNS services  (http://docs.aws.amazon.com/Route53/latest/DeveloperGuide/MigratingDNS.html)
 1. Create an account with AWS - sign up for 1 year of free tier services (https://aws.amazon.com/free/)
   * Verify your account: https://portal.aws.amazon.com/billing/signup?redirect_url=https://aws.amazon.com/registration-confirmation#/identityverification
   * Check your email for any additional verification steps and complete them as needed
   * If you want to use the free tier service, you will need to edit group_vars/all/vars.yml and set instance_size to 't2.micro'. After your free service is over, this instance size will cost ~$10/month. You can automatically switch to a smaller instance that costs ~$5/month by changing the value back to 't2.nano' and re-running the playbook.
   * If you already have an AWS account and have exhausted your free services, the services required to support Oasis are a t2.nano instance and a hosted zone. We estimate charges to be ~$5-6/month for a t2.nano with DNS services.
+1. Register a domain that will be used for email (e.g.: cooldomain.net)
+  * We suggest using Amazon Web Services (AWS) to skip manually configuring DNS. You will receive an email asking to verify your registration - click the link in the email.
+  * If you are using a domain registered with another service it is likely not using AWS for DNS and you will need to configure your domain to use AWS DNS services  (http://docs.aws.amazon.com/Route53/latest/DeveloperGuide/MigratingDNS.html)
 1. In the AWS web console, go to Identity Access and Management (IAM) and create a user account and save the credentials for the account (AWS_ACCESS_KEY and AWS_SECRET_ACCESS_KEY). (http://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console) You will need to assign the following permissions to the user under Managed Policies (http://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-using.html#attach-managed-policy-console)
   * AmazonEC2FullAccess
   * AmazonRoute53FullAccess
@@ -77,8 +81,7 @@ We recommend that you install putty so you have a good ssh client to access your
 1. You will be prompted to confirm that the values you entered are correct. Press Enter to continue or Ctrl+C and then 'a' to abort. If you abort, delete the the vault.decrypted file in files/ `$ rm files/vault.decrypted`
 1. You will be prompted to specify a vault password. The vault password is used to encrypt the information you provided in the prompts above, along with some randomly generated passwords.
   * We recommend using a password manager for generating and storing strong passwords
-1. After the vault password prompt, you will soon be prompted to accept the SSH key for the gateway. Type 'yes' and press 'Enter'
-1. After the execution is complete, your Pi will reboot. Your ssh session may hang so you may need to close the terminal.
+1. After the vault password prompt, you will soon be prompted to accept the SSH key for the gateway. Type 'yes' and press 'Enter'. If execution fails after this point, you will need to edit your .ssh/known_hosts file and remove this host before running the playbooks again.
 1. Configure your mail (IMAP), calendar (CalDAV) and contacts (CardDAV) clients as follows from values you input when prompted during the install:
   * username: louis
   * password: strong_password_here
