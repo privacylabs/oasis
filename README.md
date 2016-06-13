@@ -101,14 +101,7 @@ To run in development mode:
 
 1. Install the latest version of Vagrant on your development machine
 1. Navigate to this source directory from the command line
-1. Modify configuration values in development/inventory
 1. $ vagrant up
-
-In Vagrant 1.8.1 there is a known bug which prevents ansible from being found in the
-virtual machine instance.  This will result in an error shown until Vagrant 1.8.2 is
-release.  To work around this problem, complete the installation by ssh'ing into the
-virutal machine and manually executing ansible
-
 1. $ vagrant ssh
-1. $ cd /vagrant
-1. $ ansible-playbook -i development/inventory site.yml
+1. $ cd oasis
+1. $ ansible-playbook -i inventory site.yml

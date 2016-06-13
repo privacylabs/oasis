@@ -69,18 +69,8 @@ Vagrant.configure(2) do |config|
   #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
   # end
 
-#  config.vm.provision "ansible" do |ansible|
-#	ansible.playbook = "development/setup.yml"
-#  end 
-
-  # Enable provisioning with a shell script. Additional provisioners such as
-  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
-  # documentation for more information about their specific syntax and use.
- # config.vm.provision "ansible_local" do |ansible|
-  #	ansible.verbose = "vv"
-#	ansible.playbook = "site.yml"
-#	ansible.inventory_path = "development/inventory"
-#	ansible.limit = "all"
- # end
+  config.vm.provision "ansible" do |ansible|
+	ansible.playbook = "development/setup.yml"
+  end
 end
 
