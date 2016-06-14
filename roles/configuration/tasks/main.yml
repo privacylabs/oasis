@@ -47,7 +47,7 @@
 
   - name: generate ssh key if it doesn't exist
     user:
-      name: pi
+      name: "{{ ansible_user_id }}"
       generate_ssh_key: yes
       ssh_key_type: rsa
       ssh_key_bits: 2048
