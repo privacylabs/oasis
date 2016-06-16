@@ -1,18 +1,19 @@
 ---
-cloud: 'aws'
-aws_region: 'us-west-2'
-digital_ocean_api_token: ''
 preserve_keys: true
-aws_instance_type: 't2.nano'
-terminate_gateway: yes
-#public_ip: ''
-#letsencrypt_staging: yes
+skip_letsencrypt: yes
 
 ldapadminpassword: 'raspberry'
-caldavuserpassword: 'raspberry'
+caldavduserpassword: 'raspberry'
 postfixuserpassword: 'raspberry'
 domain: 'raspberrypi.local'
-
-
-#admin_email: '{{ vault_username }}@{{ vault_domain }}'
-#ldap_org_name: '{{ vault_first_name }} {{ vault_last_name }}'
+admin_email: 'pi@raspberrypi.local'
+ldap_org_name: 'Raspberry Pi'
+ansible_user_id: 'pi'
+emailusers:
+  - username: pi
+    lastname: Pi
+    firstname: Raspberry
+    password: raspberry
+    uidnumber: 10001
+    gidnumber: 5000
+    fullname: Raspberry Pi

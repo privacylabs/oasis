@@ -1,7 +1,12 @@
 ---
+- hosts: localhost
+  roles:
+    - provision
+
 - hosts: pi
   gather_facts: false
-  include_vars: vars/default.yml
+  vars_files:
+    - vars/default.yml
   vars:
     host_domains: 'mail.{{domain}}'
     ldap_ip: '127.0.0.1'
@@ -13,16 +18,19 @@
     ldap_service_searchbase: '{{ "ou=services,dc=" + domain.split(".") | join(",dc=") }}'
     autossh: true
     sshuttle: true
-  tasks:
+  pre_tasks:
     - name: git clone letsencrypt
       git:
         repo: https://github.com/letsencrypt/letsencrypt
         dest: /opt/letsencrypt
         force: yes
+      become: yes
+    - name: add fake gateway so we can install tunnel
+      add_host: hostname=gateway ansible_host='127.0.0.1' ansible_user='ubuntu'
   roles:
     - common
     - tunnel
-    - letsencrypt_basic
+    - letsencrypt
     - openldap
     - mail
     - calendarserver

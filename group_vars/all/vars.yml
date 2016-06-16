@@ -1,5 +1,5 @@
 ---
-cloud: 'aws'
+#cloud: 'aws'
 aws_region: 'us-west-2'
 digital_ocean_api_token: ''
 preserve_keys: true
