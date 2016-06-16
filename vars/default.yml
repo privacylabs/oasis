@@ -1,7 +1,7 @@
 ---
 preserve_keys: true
 skip_letsencrypt: yes
-
+image_creation: yes
 ldapadminpassword: 'raspberry'
 caldavduserpassword: 'raspberry'
 postfixuserpassword: 'raspberry'
