@@ -32,6 +32,6 @@
     - tunnel
     - letsencrypt
     - openldap
-    - mail
+#    - mail
     - calendarserver
 
