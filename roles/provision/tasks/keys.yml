@@ -8,17 +8,22 @@
   tags:
     - packages
 
-- name: check if DH key exists
+- name: check if DH key exists in temp location
   stat: path=~/.ansible/tmp/dh_1024.pem
   register: dhkey
   tags:
     - packages
 
+- name: check if DH key exists in install location
+  stat: path=/etc/postfix/certs/dh_1024.pem
+  register: dhkey2
+  become: yes
+
 - name: create DH keys for PFS
   shell: openssl dhparam -2 -out dh_1024.pem 1024 chdir=~/.ansible/tmp/
-  when: dhkey.stat.exists == false
   tags:
     - packages
+  when: dhkey.stat.exists == false and dhkey2.stat.exists == false
 
 - name: extract public key value
   shell: "cat ~/.ansible/tmp/mail.public | grep -v '^--' | tr -d '\n' > ~/.ansible/tmp/mail.dns"
