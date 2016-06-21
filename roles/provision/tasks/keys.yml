@@ -1,12 +1,12 @@
 - name: generate DKIM private key
   command: openssl genrsa -out ~/.ansible/tmp/mail.private 1024
   tags:
-    - packages
+    - configuration
 
 - name: generate DKIM public key
   command: openssl rsa -in ~/.ansible/tmp/mail.private -out ~/.ansible/tmp/mail.public -pubout -outform PEM
   tags:
-    - packages
+    - configuration
 
 - name: check if DH key exists in temp location
   stat: path=~/.ansible/tmp/dh_1024.pem
@@ -30,25 +30,25 @@
 - name: extract public key value
   shell: "cat ~/.ansible/tmp/mail.public | grep -v '^--' | tr -d '\n' > ~/.ansible/tmp/mail.dns"
   tags:
-    - packages
+    - configuration
 
 - name: load files into variables
   command: "cat ~/.ansible/tmp/mail.private"
   register: dkim_private
   tags:
-    - packages
+    - configuration
 
 - name: load files into variables
   command: "cat ~/.ansible/tmp/mail.public"
   register: dkim_public
   tags:
-    - packages 
+    - configuration
 
 - name: load files into variables
   command: "cat ~/.ansible/tmp/mail.dns"
   register: dkim_dns
   tags:
-    - packages
+    - configuration
 
 - name: delete files
   file:
@@ -56,3 +56,6 @@
     state: absent
   with_items: [ 'mail.private', 'mail.public', 'mail.dns', 'dh_1024.pem' ]
   when: preserve_keys is undefined
+  tags:
+    - configuration
+    - packages
