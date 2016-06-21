@@ -48,12 +48,6 @@
   tags:
     - packages
 
-- name: load files into variables
-  command: "cat ~/.ansible/tmp/dh_1024.pem"
-  register: dh_keys
-  tags:
-    - packages
-
 - name: delete files
   file:
     name: "~/.ansible/tmp/{{ item }}"
