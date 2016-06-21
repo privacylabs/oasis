@@ -19,14 +19,16 @@ def generate_password():
 
 
 def setup():
+  encryptedfilename = "./files/vault.encrypted"
+  decryptedfilename = "./files/vault.decrypted"
   configuration = {}
   newconfiguration = {}
-  if os.path.isfile("./files/vault.encrypted"):
+  if os.path.isfile(encryptedfilename):
     print "Importing configuration from existing vault"
-    call(["ansible-vault", "decrypt", "./files/vault.encrypted", "--output=./files/vault.decrypted"])
-    stream = open("./files/vault.decrypted")
+    call(["ansible-vault", "decrypt", encryptedfilename, "--output="+decryptedfilename])
+    stream = open(decryptedfilename)
     configuration = yaml.load(stream)
-    os.remove("./files/vault.decrypted")
+    os.remove(decryptedfilename)
 
   newconfiguration["vault_domain"] = rlinput("Please enter your domain: ", configuration.get("vault_domain", None))
   newconfiguration["vault_first_name"] = rlinput("Please enter your first name: ", configuration.get("vault_first_name", None))
@@ -56,13 +58,20 @@ def setup():
 
   if not newconfiguration == configuration:
     print "Updating vault with new configuration"
-    decrypted = open("./files/vault.decrypted", "w")
+    dir = os.path.dirname(decryptedfilename) 
+
+    try:
+      os.stat(dir)
+    except:
+      os.mkdir(dir)
+ 
+    decrypted = open(decryptedfilename, "w")
     decrypted.truncate()
     decrypted.write(yaml.dump(newconfiguration, default_flow_style=False, explicit_start=True))
     decrypted.close()
-    call(["ansible-vault", "encrypt", "./files/vault.decrypted", "--output", "./files/vault.encrypted"])
-    os.remove("./files/vault.decrypted")
-    print("Vault created in ./files/vault.encrypted")
+    call(["ansible-vault", "encrypt", decryptedfilename, "--output", encryptedfilename])
+    os.remove(decryptedfilename)
+    print("Vault created in " + encryptedfilename)
   else:
     print("Configuration unchanged.")
 
