@@ -19,12 +19,6 @@
     autossh: true
     sshuttle: true
   pre_tasks:
-    - name: git clone letsencrypt
-      git:
-        repo: https://github.com/letsencrypt/letsencrypt
-        dest: /opt/letsencrypt
-        force: yes
-      become: yes
     - name: add fake gateway so we can install tunnel
       add_host: hostname=gateway ansible_host='127.0.0.1' ansible_user='ubuntu'
   roles:
