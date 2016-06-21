@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/python
 import os.path
 from subprocess import call
 import yaml
@@ -27,7 +27,6 @@ def setup():
     stream = open("./files/vault.decrypted")
     configuration = yaml.load(stream)
     os.remove("./files/vault.decrypted")
-    print configuration
 
   newconfiguration["vault_domain"] = rlinput("Please enter your domain: ", configuration.get("vault_domain", None))
   newconfiguration["vault_first_name"] = rlinput("Please enter your first name: ", configuration.get("vault_first_name", None))
