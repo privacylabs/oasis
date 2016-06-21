@@ -18,6 +18,8 @@
   stat: path=/etc/postfix/certs/dh_1024.pem
   register: dhkey2
   become: yes
+  tags:
+    - packages
 
 - name: create DH keys for PFS
   shell: openssl dhparam -2 -out dh_1024.pem 1024 chdir=~/.ansible/tmp/
