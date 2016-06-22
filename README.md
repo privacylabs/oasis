@@ -29,8 +29,8 @@ We have tested Ubuntu 14.04 and 16.04. Please install avahi-daemon for discoveri
 
 ## Preparing the Pi
 
-1. Download Raspbian Jessie Lite (https://www.raspberrypi.org/downloads/raspbian/)
-1. Flash your microSD card with Raspbian Jessie Lite (https://www.raspberrypi.org/documentation/installation/installing-images/README.md)
+1. Download the latest Oasis Raspbian Image (https://s3-us-west-2.amazonaws.com/privacylabs-oasis-images/image_2016-06-21-raspberrypi.img-lite.zip)
+1. Flash your microSD card with the Oasis Image (https://www.raspberrypi.org/documentation/installation/installing-images/README.md)
 1. Insert the microSD card into the microSD card socket on the bottom of the Pi
 1. Connect your Pi to your router using an Ethernet Cable
 1. Connect your Pi to your laptop using a microUSB cable or to a power plug
@@ -38,14 +38,6 @@ We have tested Ubuntu 14.04 and 16.04. Please install avahi-daemon for discoveri
 1. Change your password to a secure password - `$ passwd`
   * We recommend using a password manager for generating and storing strong passwords
 1. Configure wifi on your Pi (https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md)
-1. Install prerequisites:
-  * `$ sudo apt-get update`
-  * `$ sudo apt-get upgrade (reboot if necessary)`
-  * `$ sudo apt-get install python-pip python-crypto libffi-dev libssl-dev python-dev python-yaml git`
-  * `$ sudo pip install markupsafe`
-  * `$ sudo pip install cryptography --upgrade`
-  * `$ sudo pip install boto`
-  * `$ sudo pip install ansible --upgrade` (You may see an error about libyaml, but if you can run `$ ansible --version` successfully, you're all set)
 
 ## Preparing your cloud configuration
 
@@ -68,8 +60,8 @@ We have tested Ubuntu 14.04 and 16.04. Please install avahi-daemon for discoveri
 1. Log into your Pi - `$ ssh pi@raspberrypi.local`
 1. Clone this repository - `$ git clone https://github.com/privacylabs/oasis --recursive`
 1. `$ cd oasis`
-1. Run the playbooks - `$ ansible-playbook -i inventory site.yml`
-1. When prompted, carefully enter responses for the following values (There is a bug in Ansible 2.x which prevents responses from showing in the terminal as you type. Unfortunately, this way of taking input is very unforgiving, so any typos will require you to start over)
+1. Run the oasis script - `$ ./oasis.py --both`
+1. When prompted, carefully enter responses for the following values
   * Domain - (e.g.: cooldomain.net)
   * First Name (e.g.: Louis)
   * Last Name (e.g.: Brandeis)
@@ -78,7 +70,6 @@ We have tested Ubuntu 14.04 and 16.04. Please install avahi-daemon for discoveri
   * Confirm Password
   * AWS Access Key
   * AWS Secret Access Key
-1. You will be prompted to confirm that the values you entered are correct. Press Enter to continue or Ctrl+C and then 'a' to abort. If you abort, delete the the vault.decrypted file in files/ `$ rm files/vault.decrypted`
 1. You will be prompted to specify a vault password. The vault password is used to encrypt the information you provided in the prompts above, along with some randomly generated passwords.
   * We recommend using a password manager for generating and storing strong passwords
 1. After the vault password prompt, you will soon be prompted to accept the SSH key for the gateway. Type 'yes' and press 'Enter'. If execution fails after this point, you will need to edit your .ssh/known_hosts file and remove this host before running the playbooks again.
