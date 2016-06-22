@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import os.path
 from subprocess import call
+from subprocess import check_output
 import yaml
 import readline
 import getpass
@@ -15,7 +16,7 @@ def rlinput(prompt, prefill=''):
     readline.set_startup_hook()
 
 def generate_password():
-  return call(["openssl", "rand", "-base64", "20"])
+  return check_output(["openssl", "rand", "-base64", "20"]).strip()
 
 
 def setup():
