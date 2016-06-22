@@ -123,8 +123,6 @@
 - name: Wait for SSH
   wait_for: host={{ gateway_eip.public_ip }} port=22 delay=5 timeout=150 state=started
 
-- include: keys.yml
-
 - name: Create SPF record
   route53:
     command: create

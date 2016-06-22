@@ -1,34 +1,12 @@
 ---
-- hosts: pi
-  roles:
-    - configuration
-  tags:
-    - configuration
-
 - hosts: localhost
-  tags:
-    - configuration
-  vars_files:
-    - vars/custom.yml
-  environment:
-    AWS_DEFAULT_REGION: "{{ aws_region }}"
-    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
-    AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
   roles:
     - provision
 
-- hosts: gateway
-  tags:
-    - configuration
-  vars:
-    fail2ban_postfix: false
-    fail2ban_dovecot: false
-    client_pub_key: "{{ lookup('file', '~/.ansible/tmp/temp_client_pubkey_file.pub') }}"
-  roles:
-    - gateway
-
 - hosts: pi
-  gather_facts: true
+  gather_facts: false
+  vars_files:
+    - vars/default.yml
   vars:
     host_domains: 'mail.{{domain}}'
     ldap_ip: '127.0.0.1'
@@ -40,6 +18,9 @@
     ldap_service_searchbase: '{{ "ou=services,dc=" + domain.split(".") | join(",dc=") }}'
     autossh: true
     sshuttle: true
+  pre_tasks:
+    - name: add fake gateway so we can install tunnel
+      add_host: hostname=gateway ansible_host='127.0.0.1' ansible_user='ubuntu'
   roles:
     - common
     - tunnel
@@ -47,3 +28,4 @@
     - openldap
     - mail
     - calendarserver
+

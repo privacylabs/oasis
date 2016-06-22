@@ -1,0 +1,19 @@
+---
+preserve_keys: true
+skip_letsencrypt: yes
+image_creation: yes
+ldapadminpassword: 'raspberry'
+caldavduserpassword: 'raspberry'
+postfixuserpassword: 'raspberry'
+domain: 'raspberrypi.local'
+admin_email: 'pi@raspberrypi.local'
+ldap_org_name: 'Raspberry Pi'
+ansible_user_id: 'pi'
+emailusers:
+  - username: pi
+    lastname: Pi
+    firstname: Raspberry
+    password: raspberry
+    uidnumber: 10001
+    gidnumber: 5000
+    fullname: Raspberry Pi
