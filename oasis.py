@@ -77,7 +77,7 @@ def setup():
     print("Configuration unchanged.")
 
 def configure():
-  call(["ansible-playbook", "-i", "inventory", "site.yml", "--tags", "configuration"])
+  call(["ansible-playbook", "-i", "inventory", "site.yml"])
 
 def usage():
   print "usage: ./oasis.py [--setup|--config|--both]"
