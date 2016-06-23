@@ -68,8 +68,8 @@ We have tested Ubuntu 14.04 and 16.04. Please install avahi-daemon for discoveri
 1. Log into your Pi - `$ ssh pi@raspberrypi.local`
 1. Clone this repository - `$ git clone https://github.com/privacylabs/oasis --recursive`
 1. `$ cd oasis`
-1. Run the playbooks - `$ ansible-playbook -i inventory site.yml`
-1. When prompted, carefully enter responses for the following values (There is a bug in Ansible 2.x which prevents responses from showing in the terminal as you type. Unfortunately, this way of taking input is very unforgiving, so any typos will require you to start over)
+1. Run the oasis script - `$ ./oasis.py --both`
+1. When prompted, carefully enter responses for the following values
   * Domain - (e.g.: cooldomain.net)
   * First Name (e.g.: Louis)
   * Last Name (e.g.: Brandeis)
@@ -78,7 +78,6 @@ We have tested Ubuntu 14.04 and 16.04. Please install avahi-daemon for discoveri
   * Confirm Password
   * AWS Access Key
   * AWS Secret Access Key
-1. You will be prompted to confirm that the values you entered are correct. Press Enter to continue or Ctrl+C and then 'a' to abort. If you abort, delete the the vault.decrypted file in files/ `$ rm files/vault.decrypted`
 1. You will be prompted to specify a vault password. The vault password is used to encrypt the information you provided in the prompts above, along with some randomly generated passwords.
   * We recommend using a password manager for generating and storing strong passwords
 1. After the vault password prompt, you will soon be prompted to accept the SSH key for the gateway. Type 'yes' and press 'Enter'. If execution fails after this point, you will need to edit your .ssh/known_hosts file and remove this host before running the playbooks again.
