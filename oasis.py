@@ -83,14 +83,10 @@ def usage():
   print "usage: ./oasis.py [--setup|--config|--both]"
 
 def main():
-  setupopt = False
-  configopt = False
+  setupopt = True
+  configopt = True
   
   args = sys.argv[1:]
-  if not args:
-    usage()
-    sys.exit()
-
   try:
     opts, args = getopt.getopt(args, "scbh", ["setup", "config", "both", "help"])
   except getopt.GetoptError:
