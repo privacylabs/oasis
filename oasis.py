@@ -87,6 +87,7 @@ def main():
   configopt = True
   
   args = sys.argv[1:]
+
   try:
     opts, args = getopt.getopt(args, "scbh", ["setup", "config", "both", "help"])
   except getopt.GetoptError:
