@@ -77,19 +77,16 @@ def setup():
     print("Configuration unchanged.")
 
 def configure():
-  call(["ansible-playbook", "-i", "inventory", "site.yml"])
+  call(["ansible-playbook", "-i", "inventory", "site.yml", "--tags", "configuration"])
 
 def usage():
   print "usage: ./oasis.py [--setup|--config|--both]"
 
 def main():
-  setupopt = False
-  configopt = False
+  setupopt = True
+  configopt = True
   
   args = sys.argv[1:]
-  if not args:
-    usage()
-    sys.exit()
 
   try:
     opts, args = getopt.getopt(args, "scbh", ["setup", "config", "both", "help"])
