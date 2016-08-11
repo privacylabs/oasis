@@ -7,6 +7,7 @@ import readline
 import getpass
 import sys
 import getopt
+import shutil
 
 def rlinput(prompt, prefill=''):
   readline.set_startup_hook(lambda: readline.insert_text(prefill))
@@ -18,12 +19,20 @@ def rlinput(prompt, prefill=''):
 def generate_password():
   return check_output(["openssl", "rand", "-base64", "20"]).strip()
 
+def update():
+  oldencryptedfilename = "./files/vault.encrypted"
+  encryptedfilename = "./group_vars/all/vault.yml"
+
+  if not os.path.isfile(encryptedfilename) and os.path.isfile(oldencryptedfilename):
+    print "Copying old vault location to new"
+    shutil.copy(oldencryptedfilename, encryptedfilename)
 
 def setup():
-  encryptedfilename = "./files/vault.encrypted"
-  decryptedfilename = "./files/vault.decrypted"
+  encryptedfilename = "./group_vars/all/vault.yml"
+  decryptedfilename = "./group_vars/vault.decrypted"
   configuration = {}
   newconfiguration = {}
+
   if os.path.isfile(encryptedfilename):
     print "Importing configuration from existing vault"
     call(["ansible-vault", "decrypt", encryptedfilename, "--output="+decryptedfilename])
@@ -77,14 +86,14 @@ def setup():
     print("Configuration unchanged.")
 
 def configure():
-  call(["ansible-playbook", "-i", "inventory", "site.yml", "--tags", "configuration"])
+  call(["ansible-playbook", "-i", "inventory", "site.yml", "--tags", "configuration", "--ask-vault-pass"])
 
 def usage():
   print "usage: ./oasis.py [--setup|--config|--both]"
 
 def main():
-  setupopt = True
-  configopt = True
+  setupopt = False
+  configopt = False
   
   args = sys.argv[1:]
 
@@ -104,6 +113,8 @@ def main():
     if opt in ("-b", "--both"):
       configopt = True
       setupopt = True
+
+  update()
 
   if setupopt:
     setup()
