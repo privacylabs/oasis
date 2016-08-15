@@ -1,0 +1,38 @@
+---
+  - name: setup privacylabs repository
+    set_fact:
+      apt_key_url: "http://repo.privacylabs.io/debian/gpg.key"
+      apt_repo_url: [ 'deb http://repo.privacylabs.io/debian/ jessie main' ]
+    when: ansible_architecture == "armv6l" or ansible_architecture == "armv7l"
+    tags:
+      - packages
+
+  - name: Add privacylabs repo key
+    apt_key:
+      url: "{{ apt_key_url }}"
+      state: present
+      validate_certs: false
+    become: yes
+    when: ansible_architecture == "armv6l" or ansible_architecture == "armv7l"
+    tags:
+      - packages
+
+  - name: Install privacylabs apt repository
+    apt_repository:
+      repo: '{{ item }}'
+      state: present
+    with_items: "{{ apt_repo_url }}"
+    become: yes
+    when: ansible_architecture == "armv6l" or ansible_architecture == "armv7l"
+    tags:
+      - packages
+
+  - name: Install configurator
+    apt:
+      name: "{{ item }}"
+      update_cache: yes
+    with_items: [ 'oasis-configurator']
+    become: yes
+    when: ansible_architecture == "armv6l" or ansible_architecture == "armv7l"
+    tags:
+      - packages
