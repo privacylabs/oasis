@@ -29,8 +29,8 @@ We have tested Ubuntu 14.04 and 16.04. Please install avahi-daemon for discoveri
 
 ## Preparing the Pi
 
-1. Download Raspbian Jessie Lite (https://www.raspberrypi.org/downloads/raspbian/)
-1. Flash your microSD card with Raspbian Jessie Lite (https://www.raspberrypi.org/documentation/installation/installing-images/README.md)
+1. Download the latest Oasis Raspbian Image (https://s3-us-west-2.amazonaws.com/privacylabs-oasis-images/image_2016-06-29-oasis-lite.zip)
+1. Flash your microSD card with the unzipped Oasis Image (https://www.raspberrypi.org/documentation/installation/installing-images/README.md)
 1. Insert the microSD card into the microSD card socket on the bottom of the Pi
 1. Connect your Pi to your router using an Ethernet Cable
 1. Connect your Pi to your laptop using a microUSB cable or to a power plug
@@ -38,14 +38,6 @@ We have tested Ubuntu 14.04 and 16.04. Please install avahi-daemon for discoveri
 1. Change your password to a secure password - `$ passwd`
   * We recommend using a password manager for generating and storing strong passwords
 1. Configure wifi on your Pi (https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md)
-1. Install prerequisites:
-  * `$ sudo apt-get update`
-  * `$ sudo apt-get upgrade (reboot if necessary)`
-  * `$ sudo apt-get install python-pip python-crypto libffi-dev libssl-dev python-dev python-yaml git`
-  * `$ sudo pip install markupsafe`
-  * `$ sudo pip install cryptography --upgrade`
-  * `$ sudo pip install boto`
-  * `$ sudo pip install ansible --upgrade` (You may see an error about libyaml, but if you can run `$ ansible --version` successfully, you're all set)
 
 ## Preparing your cloud configuration
 
@@ -68,7 +60,7 @@ We have tested Ubuntu 14.04 and 16.04. Please install avahi-daemon for discoveri
 1. Log into your Pi - `$ ssh pi@raspberrypi.local`
 1. Clone this repository - `$ git clone https://github.com/privacylabs/oasis --recursive`
 1. `$ cd oasis`
-1. Run the oasis script - `$ ./oasis.py --both`
+1. Run the oasis script - `$ ./oasis.py`
 1. When prompted, carefully enter responses for the following values
   * Domain - (e.g.: cooldomain.net)
   * First Name (e.g.: Louis)
