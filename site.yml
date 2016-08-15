@@ -18,6 +18,7 @@
     - provision
 
 - hosts: gateway
+  connection: paramiko
   tags:
     - configuration
   vars:
