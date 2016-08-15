@@ -163,3 +163,16 @@
 
 - name: Add new instance to hosts
   add_host: hostname=gateway ansible_host={{ gateway_eip.public_ip }} ansible_user='ubuntu'
+
+- name: Add gateway as known host
+  lineinfile:
+    dest: ~/.ssh/known_hosts
+    create: yes
+    state: present
+    line: "{{ lookup('pipe', 'ssh-keyscan -t rsa ' + item) }}"
+    regexp: "{{'^' + item }}"
+  with_items:
+    - "{{ hostvars['gateway']['ansible_host'] }}"
+  when: image_creation is undefined
+  tags:
+    - configuration
