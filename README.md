@@ -29,7 +29,7 @@ We have tested Ubuntu 14.04 and 16.04. Please install avahi-daemon for discoveri
 
 ## Preparing the Pi
 
-1. Download the latest Oasis Raspbian Image (https://s3-us-west-2.amazonaws.com/privacylabs-oasis-images/image_2016-06-29-oasis-lite.zip)
+1. Download the latest Oasis Raspbian Image (https://s3-us-west-2.amazonaws.com/privacylabs-oasis-images/image_2016-06-29-oasis-lite.zip). [the project used to generate the image is here https://github.com/privacylabs/pi-gen]
 1. Flash your microSD card with the unzipped Oasis Image (https://www.raspberrypi.org/documentation/installation/installing-images/README.md)
 1. Insert the microSD card into the microSD card socket on the bottom of the Pi
 1. Connect your Pi to your router using an Ethernet Cable
