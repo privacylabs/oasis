@@ -34,8 +34,6 @@
           gidnumber: 5000
           fullname: '{{ vault_first_name }} {{ vault_last_name }}'
 
-  # - debug: msg="{{ user_domain }} {{ first_name }} {{ last_name }} {{ username }} {{ password1 }} {{ password2 }}"
-
   - name: encrypt vault
     command: ansible-vault encrypt ./files/vault.decrypted --output ./files/vault.encrypted
     when: vault_file.stat.exists != true
@@ -56,3 +54,33 @@
     copy:
       dest: ~/.ansible/tmp/temp_client_pubkey_file.pub
       src: ~/.ssh/id_rsa.pub
+
+  - name: install openvpn
+    package:
+      name: openvpn
+      state: latest
+    become: yes
+
+  - name: check to see if openvpn key exists
+    stat:
+      path: /etc/openvpn/static.key
+    register: openvpn_key
+
+  - name: create openvpn static key
+    command: openvpn --genkey --secret /etc/openvpn/static.key
+    become: yes
+    when: openvpn_key.stat.exists != true
+
+  - name: change permissions on static key file
+    file: path=/etc/openvpn/static.key mode=0644
+    become: yes
+
+  - name: copy openvpn key to temp
+    copy:
+      src: /etc/openvpn/static.key
+      dest: "/home/{{ansible_user}}/.ansible/tmp/openvpn_static.key"
+    become: yes
+
+  - name: change openvpn permissions back to readable only by root
+    file: path=/etc/openvpn/static.key mode=0600
+    become: yes

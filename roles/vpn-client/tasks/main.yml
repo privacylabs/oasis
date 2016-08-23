@@ -1,0 +1,42 @@
+---
+  - name: install openvpn
+    package:
+      name: openvpn
+      state: latest
+    become: yes
+
+  - name: check to see if openvpn key exists
+    stat:
+      path: /etc/openvpn/static.key
+    register: openvpn_key
+
+  - name: create openvpn static key
+    command: openvpn --genkey --secret /etc/openvpn/static.key
+    become: yes
+    when: openvpn_key.stat.exists != true and openvpn_static_key is not defined
+
+  - name: copy openvpn static key
+    copy:
+      content: "{{ openvpn_static_key }}"
+      dest: /etc/openvpn/static.key
+      mode: 0600
+    become: yes
+    when: openvpn_key.stat.exists != true and openvpn_static_key is defined
+
+  - name: copy openvpn client config
+    template:
+      src: openvpn-client.j2
+      dest: /etc/openvpn/client.conf
+      mode: 0600
+    become: yes
+
+  - name: enable vpn client
+    command: systemctl enable openvpn
+    become: yes
+
+  - name: start vpn client
+    service:
+      name: openvpn
+      enabled: yes
+      state: restarted
+    become: yes

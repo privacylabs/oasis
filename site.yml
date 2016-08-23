@@ -24,6 +24,7 @@
     fail2ban_postfix: false
     fail2ban_dovecot: false
     client_pub_key: "{{ lookup('file', '~/.ansible/tmp/temp_client_pubkey_file.pub') }}"
+    openvpn_static_key: "{{ lookup('file', '~/.ansible/tmp/openvpn_static.key') }}"
   roles:
     - gateway
 
@@ -38,11 +39,10 @@
     fail2ban_dovecot: true
     ldap_user_searchbase: '{{ "ou=people,dc=" + domain.split(".") | join(",dc=") }}'
     ldap_service_searchbase: '{{ "ou=services,dc=" + domain.split(".") | join(",dc=") }}'
-    autossh: true
-    sshuttle: true
+    openvpn_static_key: "{{ lookup('file', '~/.ansible/tmp/openvpn_static.key') }}"
   roles:
     - common
-    - tunnel
+    - vpn-client
     - letsencrypt
     - openldap
     - mail

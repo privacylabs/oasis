@@ -5,34 +5,68 @@
       state: absent
     become: yes
 
-  - name: add gateway client pub key to root user authorized_keys file
-    authorized_key:
-      key: "{{ client_pub_key }}"
-      user: root
-    become: yes
-
   - name: add gateway client pub key to ubuntu user authorized_keys file
     authorized_key:
       key: "{{ client_pub_key }}"
       user: "{{ ansible_user }}"
     become: yes
 
-  - name: copy sshd config
+  - name: install openvpn
+    package:
+      name: openvpn
+      state: latest
+    become: yes
+
+  - name: install iptables-persistent
+    package:
+      name: iptables-persistent
+      state: latest
+    become: yes
+
+  - name: copy sysctl config
     copy:
-      src: sshd_config
-      dest: /etc/ssh/sshd_config
+      src: sysctl-config
+      dest: /etc/sysctl.conf
     become: yes
 
-  - name: restart sshd
-    service:
-      name: sshd
-      state: restarted
+  - name: reload sysctl
+    command: sysctl -p
     become: yes
-    when: ansible_distribution == 'Debian'
 
-  - name: restart sshd
+  - name: reload sysctl
+    command: sysctl --system
+    become: yes
+
+  - name: copy openvpn server config
+    copy:
+      src: openvpn-config
+      dest: /etc/openvpn/server.conf
+      mode: 0600
+    become: yes
+
+  - name: copy iptables config
+    copy:
+      src: iptables-config
+      dest: /etc/iptables/rules.v4
+    become: yes
+
+  - name: add openvpn static key to server
+    copy:
+      content: "{{ openvpn_static_key }}"
+      dest: /etc/openvpn/static.key
+      mode: 0600
+    become: yes
+
+  - name: start openvpn service
     service:
-      name: ssh
+      name: openvpn
+      state: started
+      enabled: yes
+    become: yes
+
+  - name: restart iptables-persistent
+    service:
+      name: iptables-persistent
+      enabled: yes
       state: restarted
     become: yes
-    when: ansible_distribution == 'Ubuntu'
