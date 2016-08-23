@@ -42,7 +42,3 @@
       become: yes
       with_items: ['boto']
 
-
-    - name: clone oasis repositories
-      git: repo=https://github.com/privacylabs/oasis recursive=yes dest=~/oasis
-
