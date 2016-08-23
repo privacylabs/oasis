@@ -94,5 +94,5 @@ To run in development mode:
 1. Navigate to this source directory from the command line
 1. $ vagrant up
 1. $ vagrant ssh
-1. $ cd oasis
+1. $ cd /vagrant_data
 1. $ ansible-playbook -i inventory site.yml
