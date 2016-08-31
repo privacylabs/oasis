@@ -26,7 +26,7 @@
         state: latest
         default_release: "jessie-backports"
       become: yes
-      with_items: ['ansible', 'git']
+      with_items: ['ansible', 'git', 'golang-go']
 
     - name: install python packages
       apt:

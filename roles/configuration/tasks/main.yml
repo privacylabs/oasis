@@ -1,19 +1,4 @@
 ---
-  - name: check to see if a vault exists
-    stat:
-      path: ./files/vault.encrypted
-    register: vault_file
-
-  - include: user_input.yml
-    when: vault_file.stat.exists != true
-
-  - name: decrypt vault to a file
-    command: ansible-vault decrypt ./files/vault.encrypted --output=./files/vault.decrypted
-    when: vault_file.stat.exists
-
-  - name: read in variables
-    include_vars: ./files/vault.decrypted
-
     # set all variables for deployment here
   - name: set host facts
     set_fact:
@@ -33,15 +18,6 @@
           uidnumber: 10001
           gidnumber: 5000
           fullname: '{{ vault_first_name }} {{ vault_last_name }}'
-
-  - name: encrypt vault
-    command: ansible-vault encrypt ./files/vault.decrypted --output ./files/vault.encrypted
-    when: vault_file.stat.exists != true
-
-  - name: delete decrypted
-    file:
-      path: ./files/vault.decrypted
-      state: absent
 
   - name: generate ssh key if it doesn't exist
     user:

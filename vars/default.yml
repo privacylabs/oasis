@@ -2,12 +2,12 @@
 preserve_keys: true
 skip_letsencrypt: yes
 image_creation: yes
-ldapadminpassword: 'raspberry'
-caldavduserpassword: 'raspberry'
-postfixuserpassword: 'raspberry'
-domain: 'raspberrypi.local'
+ldapadminpassword: 'default'
+caldavduserpassword: 'default'
+postfixuserpassword: 'default'
+domain: 'default'
 admin_email: 'pi@raspberrypi.local'
-ldap_org_name: 'Raspberry Pi'
+ldap_org_name: 'Example Organization'
 ansible_user_id: 'pi'
 emailusers:
   - username: pi

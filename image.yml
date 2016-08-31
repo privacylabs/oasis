@@ -23,9 +23,9 @@
       add_host: hostname=gateway ansible_host='127.0.0.1' ansible_user='ubuntu'
   roles:
     - common
-    - tunnel
+    - vpn-client
     - letsencrypt
     - openldap
     - mail
     - calendarserver
-    - configurator
+#    - configurator
