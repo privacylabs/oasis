@@ -25,7 +25,7 @@
     - common
     - vpn-client
     - letsencrypt
-#    - openldap
+    - openldap
     - mail
     - calendarserver
 #    - configurator
