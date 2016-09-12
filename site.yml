@@ -41,6 +41,7 @@
     ldap_user_searchbase: '{{ "ou=people,dc=" + domain.split(".") | join(",dc=") }}'
     ldap_service_searchbase: '{{ "ou=services,dc=" + domain.split(".") | join(",dc=") }}'
     openvpn_static_key: "{{ lookup('file', '~/.ansible/tmp/openvpn_static.key') }}"
+    gateway_ip: "{{ hostvars['gateway']['ansible_host'] }}"
   roles:
     - common
     - vpn-client
