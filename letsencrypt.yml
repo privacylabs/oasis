@@ -1,0 +1,9 @@
+---
+- hosts: pi
+  gather_facts: true
+  vars:
+    host_domains: 'mail.{{domain}}'
+    tls_cert_file_location: '/etc/letsencrypt/live/{{ host_domains.split(", ")[0] }}/fullchain.pem'
+    tls_key_file_location: '/etc/letsencrypt/live/{{ host_domains.split(", ")[0] }}/privkey.pem'
+  roles:
+    - letsencrypt

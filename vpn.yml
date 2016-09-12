@@ -1,0 +1,7 @@
+---
+- hosts: pi
+  gather_facts: true
+  vars:
+    host_domains: 'mail.{{domain}}'
+  roles:
+    - vpn-client
