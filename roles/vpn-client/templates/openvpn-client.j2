@@ -1,4 +1,4 @@
-remote {{ hostvars['gateway']['ansible_host'] }}
+remote {{ gateway_ip }}
 dev tun
 ifconfig 10.8.0.2 10.8.0.1
 secret /etc/openvpn/static.key

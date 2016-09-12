@@ -52,5 +52,3 @@
       enabled: yes
       state: restarted
     become: yes
-    tags:
-      - configuration
