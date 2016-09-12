@@ -4,6 +4,8 @@
       name: sendmail
       state: absent
     become: yes
+    tags:
+       - build_ami
 
   - name: add gateway client pub key to ubuntu user authorized_keys file
     authorized_key:
@@ -16,26 +18,36 @@
       name: openvpn
       state: latest
     become: yes
+    tags:
+       - build_ami
 
   - name: install iptables-persistent
     package:
       name: iptables-persistent
       state: latest
     become: yes
+    tags:
+       - build_ami
 
   - name: copy sysctl config
     copy:
       src: sysctl-config
       dest: /etc/sysctl.conf
     become: yes
+    tags:
+       - build_ami
 
   - name: reload sysctl
     command: sysctl -p
     become: yes
+    tags:
+       - build_ami
 
   - name: reload sysctl
     command: sysctl --system
     become: yes
+    tags:
+       - build_ami
 
   - name: copy openvpn server config
     copy:
@@ -43,12 +55,16 @@
       dest: /etc/openvpn/server.conf
       mode: 0600
     become: yes
+    tags:
+       - build_ami
 
   - name: copy iptables config
     copy:
       src: iptables-config
       dest: /etc/iptables/rules.v4
     become: yes
+    tags:
+       - build_ami
 
   - name: add openvpn static key to server
     copy:
@@ -56,6 +72,8 @@
       dest: /etc/openvpn/static.key
       mode: 0600
     become: yes
+    tags:
+       - provision_gateway
 
   - name: start openvpn service
     service:
@@ -63,6 +81,8 @@
       state: started
       enabled: yes
     become: yes
+    tags:
+       - provision_gateway
 
   - name: restart iptables-persistent
     service:
@@ -70,3 +90,5 @@
       enabled: yes
       state: restarted
     become: yes
+    tags:
+       - build_ami
