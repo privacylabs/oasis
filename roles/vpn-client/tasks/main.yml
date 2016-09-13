@@ -61,8 +61,8 @@
       - configuration
 
   - name: start vpn client
-    service:
-      name: openvpn
-      enabled: yes
-      state: restarted
+    command: systemctl start openvpn
     become: yes
+    tags:
+      - configuration
+    when: start_vpn is defined
