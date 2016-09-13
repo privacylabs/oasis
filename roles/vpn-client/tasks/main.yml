@@ -31,6 +31,20 @@
     tags:
       - configuration
 
+  - name: copy openvpn static key variable
+    command: cat /etc/openvpn/static.key
+    tags:
+      - configuration
+    become: yes
+    register: static_key
+
+  - name: write openvpn static key to ansible tmp
+    copy:
+      content: "{{static_key.stdout}}"
+      dest: ~/.ansible/tmp/static.key
+    tags:
+      - configuration 
+
   - name: copy openvpn client config
     template:
       src: openvpn-client.j2
