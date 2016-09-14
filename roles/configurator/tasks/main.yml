@@ -6,6 +6,10 @@
     tags:
       - packages
 
+  - name: Enable configurator
+    service: name=oasis enabled=yes
+    become: yes
+
   - name: install nginx
     apt:
       name: '{{ item }}'
