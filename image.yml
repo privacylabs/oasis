@@ -28,4 +28,4 @@
     - openldap
     - mail
     - calendarserver
-#    - configurator
+    - configurator
