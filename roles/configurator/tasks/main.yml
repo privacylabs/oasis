@@ -9,6 +9,8 @@
   - name: Enable configurator
     service: name=oasis enabled=yes
     become: yes
+    tags:
+      - packages
 
   - name: install nginx
     apt:
