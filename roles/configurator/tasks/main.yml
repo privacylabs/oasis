@@ -7,7 +7,7 @@
       - packages
 
   - name: Enable configurator
-    service: name=oasis enabled=yes
+    command: systemctl enable oasis
     become: yes
     tags:
       - packages
