@@ -7,6 +7,15 @@
     tags:
        - build_ami
 
+  - name: Update cache and upgrade all installed packages to latest
+    apt:
+      update_cache: yes
+      cache_valid_time: 3600
+      upgrade: safe
+    become: yes
+    tags:
+      - build_ami
+
   - name: add gateway client pub key to ubuntu user authorized_keys file
     authorized_key:
       key: "{{ client_pub_key }}"
@@ -78,7 +87,7 @@
   - name: start openvpn service
     service:
       name: openvpn
-      state: started
+      state: restarted
       enabled: yes
     become: yes
     tags:
