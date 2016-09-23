@@ -60,7 +60,7 @@ We have tested Ubuntu 14.04 and 16.04. Please install avahi-daemon for discoveri
 1. Log into your Pi - `$ ssh pi@raspberrypi.local`
 1. Clone this repository - `$ git clone https://github.com/privacylabs/oasis --recursive`
 1. `$ cd oasis`
-1. Run the oasis script - `$ ./oasis.py`
+1. Run the oasis script - `$ ./oasis.py --both`
 1. When prompted, carefully enter responses for the following values
   * Domain - (e.g.: cooldomain.net)
   * First Name (e.g.: Louis)
