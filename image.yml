@@ -28,4 +28,5 @@
     - openldap
     - mail
     - calendarserver
+    - duplicity
     - configurator
