@@ -74,6 +74,7 @@ if [ $is_running -eq 0 ]; then
 
     duplicity \
         ${FULL} \
+        --gpg-binary=gpg2 \
         --encrypt-key=${GPG_KEY} \
         --sign-key=${GPG_KEY} \
         --exclude=/data/upper/var/log \

@@ -3,7 +3,7 @@
     apt:
       name: '{{ item }}'
       state: 'latest'
-    with_items: ['python-boto', 'rng-tools']
+    with_items: ['python-boto', 'rng-tools', 'gpgv2']
     become: yes
     tags:
         - packages
@@ -14,7 +14,7 @@
     when: ansible_architecture != "armv6l" and ansible_architecture != "armv7l"
     ignore_errors: yes
     tags:
-      - packages
+      - configuration
 
   - name: install duplicity from jessie backports
     apt:
@@ -34,7 +34,7 @@
         - packages
 
   - name: check to see if gpg key exists
-    command: gpg --list-keys root@localhost
+    command: gpg2 --list-keys root@localhost
     become: yes
     become_user: root
     register: keystatus
@@ -43,7 +43,7 @@
         - configuration
 
   - name: generate root gpg if it doesn't exist
-    command: gpg --batch --gen-key /etc/gpg-genkey-script
+    command: gpg2 --batch --gen-key /etc/gpg-genkey-script
     become: yes
     become_user: root
     when: keystatus.rc != 0
@@ -51,7 +51,7 @@
         - configuration
 
   - name: find the key id for the generated key
-    shell: gpg --list-keys root@localhost |grep sub | awk '{print $2}' | cut -d "/" -f 2
+    shell: gpg2 --list-keys root@localhost |grep sub | awk '{print $2}' | cut -d "/" -f 2
     register: keyoutput
     become: yes
     become_user: root
