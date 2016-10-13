@@ -51,7 +51,7 @@
         - configuration
 
   - name: find the key id for the generated key
-    shell: gpg2 --list-keys root@localhost |grep sub | awk '{print $2}' | cut -d "/" -f 2
+    shell: gpg2 --list-keys root@localhost |grep pub | awk '{print $2}' | cut -d "/" -f 2
     register: keyoutput
     become: yes
     become_user: root
