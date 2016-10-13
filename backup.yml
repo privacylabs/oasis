@@ -1,0 +1,11 @@
+---
+- hosts: pi
+  gather_facts: true
+  vars:
+    domain: "sigurds.org"
+    host_domains: 'mail.{{domain}}'
+    AWS_ACCESS_KEY_ID: "AKIAIA3RUZYGQSRVM5XQ"
+    AWS_SECRET_ACCESS_KEY: "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"
+    USER_ID: "AIDAIRWEFFFD6DZZIROLC"
+  roles:
+    - duplicity

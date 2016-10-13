@@ -1,0 +1,73 @@
+---
+  - name: install necessary packages
+    apt:
+      name: '{{ item }}'
+      state: 'latest'
+    with_items: ['python-boto', 'rng-tools']
+    become: yes
+    tags:
+        - packages
+
+  - name: setup rng tools
+    command: rngd -r /dev/urandom
+    become: yes
+    when: ansible_architecture != "armv6l" and ansible_architecture != "armv7l"
+    ignore_errors: yes
+    tags:
+      - packages
+
+  - name: install duplicity from jessie backports
+    apt:
+      name: 'duplicity'
+      state: 'latest'
+      default_release: 'jessie-backports'
+    become: yes
+    tags:
+        - packages
+
+  - name: copy gpg genkey script
+    copy:
+        src: gpg-genkey-script
+        dest: /etc/gpg-genkey-script
+    become: yes
+    tags:
+        - packages
+
+  - name: check to see if gpg key exists
+    command: gpg --list-keys root@localhost
+    become: yes
+    become_user: root
+    register: keystatus
+    ignore_errors: yes
+    tags:
+        - configuration
+
+  - name: generate root gpg if it doesn't exist
+    command: gpg --batch --gen-key /etc/gpg-genkey-script
+    become: yes
+    become_user: root
+    when: keystatus.rc != 0
+    tags:
+        - configuration
+
+  - name: find the key id for the generated key
+    shell: gpg --list-keys root@localhost |grep sub | awk '{print $2}' | cut -d "/" -f 2
+    register: keyoutput
+    become: yes
+    become_user: root
+    tags:
+        - configuration
+
+  - name: set the gpg key id as a fact
+    set_fact: GPG_KEY='{{keyoutput.stdout}}'
+    tags:
+        - configuration
+
+  - name: install duplicity cron job
+    template:
+        src: backup.j2
+        dest: /etc/cron.daily/backup
+        mode: 0711
+    become: yes
+    tags:
+        - configuration
