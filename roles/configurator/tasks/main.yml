@@ -39,3 +39,11 @@
     become: yes
     tags:
       - packages
+      
+  - name: Copy over nginx configuration file
+    copy:
+      src: 'nginx.conf'
+      dest: '/etc/nginx/nginx.conf'
+    become: yes
+    tags:
+      - packages
