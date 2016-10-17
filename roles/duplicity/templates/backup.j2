@@ -53,7 +53,7 @@ if [ $is_running -eq 0 ]; then
     }
 
     # How long to keep backups for
-    OLDER_THAN="1M"
+    OLDER_THAN="1W"
 
     # The source of your backup
     SOURCE=/
@@ -71,6 +71,8 @@ if [ $is_running -eq 0 ]; then
     duplicity remove-older-than ${OLDER_THAN} ${DEST} >> ${DAILYLOGFILE} 2>&1
 
     trace "... backing up filesystem"
+
+    sudo -u postgres pg_dumpall > /data/caldavd/pg_all.sql
 
     duplicity \
         ${FULL} \
