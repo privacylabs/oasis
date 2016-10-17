@@ -1,13 +1,13 @@
 #!/bin/bash
 
-if [ -f /etc/oasis ]; then
-  . /etc/oasis
+if [ -f {{configfile}} ]; then
+  BACKUPENABLED=$(awk '/^BACKUPENABLED/{print $3}' {{configfile}})
 fi
-
 
 if [ "$BACKUPENABLED" = "YES" ]; then
   echo "Backup is enabled.  Performing daily backup"
 else
+  echo "Backup is disabled.  Skipping daily backup."
   exit 0
 fi
 
