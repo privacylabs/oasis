@@ -81,6 +81,7 @@ if [ $is_running -eq 0 ]; then
         --sign-key=${GPG_KEY} \
         --exclude=/mnt/root-rw/upper/var/log \
         --exclude=/mnt/root-rw/cache/system \
+        --exclude=/mnt/root-rw/upper/var/swap \
         --include=/mnt/root-rw \
         --exclude=/** \
         ${SOURCE} ${DEST} >> ${DAILYLOGFILE} 2>&1
