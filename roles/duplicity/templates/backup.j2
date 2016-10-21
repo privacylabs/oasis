@@ -24,9 +24,9 @@ DEST="s3://s3.amazonaws.com/pl-user-backups/{{ USER_ID }}"
 
 
 # Set up some variables for logging
-LOGFILE="/var/log/duplicity/backup.log"
-DAILYLOGFILE="/var/log/duplicity/backup.daily.log"
-FULLBACKLOGFILE="/var/log/duplicity/backup.full.log"
+LOGFILE="/data/duplicity/backup.log"
+DAILYLOGFILE="/data/duplicity/backup.daily.log"
+FULLBACKLOGFILE="/data/duplicity/backup.full.log"
 HOST="mail.{{ domain }}"
 DATE=`date +%Y-%m-%d`
 MAILADDR="support@privacylabs.io"
@@ -34,8 +34,8 @@ TODAY=$(date +%d%m%Y)
 
 is_running=$(ps -ef | grep duplicity  | grep python | wc -l)
 
-if [ ! -d /var/log/duplicity ];then
-    mkdir -p /var/log/duplicity
+if [ ! -d /data/duplicity ];then
+    mkdir -p /data/duplicity
 fi
 
 if [ ! -f $FULLBACKLOGFILE ]; then
@@ -68,7 +68,7 @@ if [ $is_running -eq 0 ]; then
 
     trace "... removing old backups"
 
-    duplicity remove-older-than ${OLDER_THAN} ${DEST} >> ${DAILYLOGFILE} 2>&1
+    #duplicity remove-older-than ${OLDER_THAN} ${DEST} >> ${DAILYLOGFILE} 2>&1
 
     trace "... backing up filesystem"
 
@@ -92,11 +92,11 @@ if [ $is_running -eq 0 ]; then
     # Send the daily log file by email
     #cat "$DAILYLOGFILE" | mail -s "Duplicity Backup Log for $HOST - $DATE" $MAILADDR
     BACKUPSTATUS=`cat "$DAILYLOGFILE" | grep Errors | awk '{ print $2 }'`
-    #if [ "$BACKUPSTATUS" != "0" ]; then
-	  # cat "$DAILYLOGFILE" | mail -s "Duplicity Backup Log for $HOST - $DATE" $MAILADDR
-    #elif [ "$FULL" = "full" ]; then
-    #    echo "$(date +%d%m%Y_%T) Full Back Done" >> $FULLBACKLOGFILE
-    #fi
+    if [ "$BACKUPSTATUS" != "0" ]; then
+      echo "not flagging full backup since it failed"
+    elif [ "$FULL" = "full" ]; then
+        echo "$(date +%d%m%Y_%T) Full Back Done" >> $FULLBACKLOGFILE
+    fi
 
     # Append the daily log file to the main log file
     cat "$DAILYLOGFILE" >> $LOGFILE
