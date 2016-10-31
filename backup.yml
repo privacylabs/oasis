@@ -1,0 +1,5 @@
+---
+- hosts: pi
+  gather_facts: true
+  roles:
+    - duplicity

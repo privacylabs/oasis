@@ -1,0 +1,18 @@
+---
+- hosts: pi
+  gather_facts: true
+  vars:
+    host_domains: 'mail.{{domain}}'
+    ldap_ip: '127.0.0.1'
+    ldap_user_searchbase: '{{ "ou=people,dc=" + domain.split(".") | join(",dc=") }}'
+    ldap_service_searchbase: '{{ "ou=services,dc=" + domain.split(".") | join(",dc=") }}'
+    emailusers:
+      - username: "{{username}}"
+        lastname: "{{username}}"
+        firstname: "{{username}}"
+        password: "{{ldapadminpassword}}"
+        uidnumber: 10001
+        gidnumber: 5000
+        fullname: "{{username}}"
+  roles:
+    - openldap

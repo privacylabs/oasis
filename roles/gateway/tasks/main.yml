@@ -4,12 +4,17 @@
       name: sendmail
       state: absent
     become: yes
+    tags:
+       - build_ami
 
-  - name: add gateway client pub key to root user authorized_keys file
-    authorized_key:
-      key: "{{ client_pub_key }}"
-      user: root
+  - name: Update cache and upgrade all installed packages to latest
+    apt:
+      update_cache: yes
+      cache_valid_time: 3600
+      upgrade: safe
     become: yes
+    tags:
+      - build_ami
 
   - name: add gateway client pub key to ubuntu user authorized_keys file
     authorized_key:
@@ -17,22 +22,82 @@
       user: "{{ ansible_user }}"
     become: yes
 
-  - name: copy sshd config
+  - name: install openvpn
+    package:
+      name: openvpn
+      state: latest
+    become: yes
+    tags:
+       - build_ami
+
+  - name: install iptables-persistent
+    package:
+      name: iptables-persistent
+      state: latest
+    become: yes
+    tags:
+       - build_ami
+
+  - name: copy sysctl config
     copy:
-      src: sshd_config
-      dest: /etc/ssh/sshd_config
+      src: sysctl-config
+      dest: /etc/sysctl.conf
     become: yes
+    tags:
+       - build_ami
 
-  - name: restart sshd
+  - name: reload sysctl
+    command: sysctl -p
+    become: yes
+    tags:
+       - build_ami
+
+  - name: reload sysctl
+    command: sysctl --system
+    become: yes
+    tags:
+       - build_ami
+
+  - name: copy openvpn server config
+    copy:
+      src: openvpn-config
+      dest: /etc/openvpn/server.conf
+      mode: 0600
+    become: yes
+    tags:
+       - build_ami
+
+  - name: copy iptables config
+    copy:
+      src: iptables-config
+      dest: /etc/iptables/rules.v4
+    become: yes
+    tags:
+       - build_ami
+
+  - name: add openvpn static key to server
+    copy:
+      content: "{{ openvpn_static_key }}"
+      dest: /etc/openvpn/static.key
+      mode: 0600
+    become: yes
+    tags:
+       - provision_gateway
+
+  - name: start openvpn service
     service:
-      name: sshd
+      name: openvpn
+      state: restarted
+      enabled: yes
+    become: yes
+    tags:
+       - provision_gateway
+
+  - name: restart iptables-persistent
+    service:
+      name: iptables-persistent
+      enabled: yes
       state: restarted
     become: yes
-    when: ansible_distribution == 'Debian'
-
-  - name: restart sshd
-    service:
-      name: ssh
-      state: restarted
-    become: yes
-    when: ansible_distribution == 'Ubuntu'
+    tags:
+       - build_ami

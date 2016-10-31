@@ -1,0 +1,12 @@
+---
+- hosts: pi
+  gather_facts: true
+  vars:
+    host_domains: 'mail.{{domain}}'
+    ldap_ip: '127.0.0.1'
+    tls_cert_file_location: '/etc/letsencrypt/live/{{ host_domains.split(", ")[0] }}/fullchain.pem'
+    tls_key_file_location: '/etc/letsencrypt/live/{{ host_domains.split(", ")[0] }}/privkey.pem'
+    ldap_user_searchbase: '{{ "ou=people,dc=" + domain.split(".") | join(",dc=") }}'
+    ldap_service_searchbase: '{{ "ou=services,dc=" + domain.split(".") | join(",dc=") }}'
+  roles:
+    - calendarserver

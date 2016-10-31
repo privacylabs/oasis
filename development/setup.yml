@@ -26,7 +26,7 @@
         state: latest
         default_release: "jessie-backports"
       become: yes
-      with_items: ['ansible', 'git']
+      with_items: ['ansible', 'git', 'golang-go']
 
     - name: install python packages
       apt:
@@ -41,8 +41,4 @@
         state: latest
       become: yes
       with_items: ['boto']
-
-
-    - name: clone oasis repositories
-      git: repo=https://github.com/privacylabs/oasis recursive=yes dest=~/oasis
 

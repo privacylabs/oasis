@@ -1,0 +1,13 @@
+remote {{ gateway_ip }}
+dev tun
+ifconfig 10.8.0.2 10.8.0.1
+secret /etc/openvpn/static.key
+redirect-gateway def1
+
+
+dhcp-option DNS {{ dns1 }}
+dhcp-option DNS {{ dns2 }}
+
+script-security 2
+up /etc/openvpn/update-resolv-conf
+down /etc/openvpn/update-resolv-conf

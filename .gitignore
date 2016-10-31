@@ -1,0 +1,5 @@
+.idea
+.vagrant
+data
+filter_plugins/helpers.pyc
+

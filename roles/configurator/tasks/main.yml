@@ -1,0 +1,49 @@
+---
+  - name: Install configurator
+    apt: deb="/etc/oasis/oasis-configurator_armhf.deb"
+    become: yes
+    when: ansible_architecture == "armv6l" or ansible_architecture == "armv7l"
+    tags:
+      - packages
+
+  - name: Enable configurator
+    command: systemctl enable oasis
+    become: yes
+    tags:
+      - packages
+
+  - name: install nginx
+    apt:
+      name: '{{ item }}'
+    become: yes
+    with_items: ['nginx']
+    tags:
+      - packages
+
+  - name: Configure oasis nginx
+    template:
+      src: nginx-oasis.j2
+      dest: /etc/nginx/sites-available/oasis
+      owner: root
+      group: root
+      mode: 0644
+    become: yes
+    tags:
+      - packages
+
+  - name: Enable nginx oasis config
+    file:
+      src: /etc/nginx/sites-available/oasis
+      dest: /etc/nginx/sites-enabled/default
+      state: link
+    become: yes
+    tags:
+      - packages
+      
+  - name: Copy over nginx configuration file
+    copy:
+      src: 'nginx.conf'
+      dest: '/etc/nginx/nginx.conf'
+    become: yes
+    tags:
+      - packages

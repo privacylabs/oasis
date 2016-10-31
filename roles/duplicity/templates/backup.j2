@@ -1,0 +1,108 @@
+#!/bin/bash
+
+if [ -f {{configfile}} ]; then
+  BACKUPENABLED=$(awk '/^BACKUPENABLED/{print $3}' {{configfile}})
+fi
+
+if [ "$BACKUPENABLED" = "YES" ]; then
+  echo "Backup is enabled.  Performing daily backup"
+else
+  echo "Backup is disabled.  Skipping daily backup."
+  exit 0
+fi
+
+# Export some ENV variables so you don't have to type anything
+export AWS_ACCESS_KEY_ID="{{ AWS_ACCESS_KEY_ID }}"
+export AWS_SECRET_ACCESS_KEY="{{ AWS_SECRET_ACCESS_KEY }}"
+export PASSPHRASE=
+
+# Your GPG key
+GPG_KEY="{{ GPG_KEY }}"
+
+# The S3 destination followed by bucket name
+DEST="s3://s3.amazonaws.com/pl-user-backups/{{ USER_ID }}"
+
+
+# Set up some variables for logging
+LOGFILE="/data/duplicity/backup.log"
+DAILYLOGFILE="/data/duplicity/backup.daily.log"
+FULLBACKLOGFILE="/data/duplicity/backup.full.log"
+HOST="mail.{{ domain }}"
+DATE=`date +%Y-%m-%d`
+MAILADDR="support@privacylabs.io"
+TODAY=$(date +%d%m%Y)
+
+is_running=$(ps -ef | grep duplicity  | grep python | wc -l)
+
+if [ ! -d /data/duplicity ];then
+    mkdir -p /data/duplicity
+fi
+
+if [ ! -f $FULLBACKLOGFILE ]; then
+    touch $FULLBACKLOGFILE
+fi
+
+if [ $is_running -eq 0 ]; then
+    # Clear the old daily log file
+    cat /dev/null > ${DAILYLOGFILE}
+
+    # Trace function for logging, don't change this
+    trace () {
+            stamp=`date +%Y-%m-%d_%H:%M:%S`
+            echo "$stamp: $*" >> ${DAILYLOGFILE}
+    }
+
+    # How long to keep backups for
+    OLDER_THAN="1W"
+
+    # The source of your backup
+    SOURCE=/
+
+    FULL=
+    tail -1 ${FULLBACKLOGFILE} | grep ${TODAY} > /dev/null
+    if [ $? -ne 0 -a $(date +%d) -eq 1 ]; then
+            FULL=full
+    fi;
+
+    trace "Backup for local filesystem started"
+
+    trace "... removing old backups"
+
+    #duplicity remove-older-than ${OLDER_THAN} ${DEST} >> ${DAILYLOGFILE} 2>&1
+
+    trace "... backing up filesystem"
+
+    sudo -u postgres pg_dumpall > /data/caldavd/pg_all.sql
+
+    duplicity \
+        ${FULL} \
+        --gpg-binary=gpg2 \
+        --encrypt-key=${GPG_KEY} \
+        --sign-key=${GPG_KEY} \
+        --exclude=/mnt/root-rw/upper/var/log \
+        --exclude=/mnt/root-rw/cache/system \
+        --exclude=/mnt/root-rw/upper/var/swap \
+        --include=/mnt/root-rw \
+        --exclude=/** \
+        ${SOURCE} ${DEST} >> ${DAILYLOGFILE} 2>&1
+
+    trace "Backup for local filesystem complete"
+    trace "------------------------------------"
+
+    # Send the daily log file by email
+    #cat "$DAILYLOGFILE" | mail -s "Duplicity Backup Log for $HOST - $DATE" $MAILADDR
+    BACKUPSTATUS=`cat "$DAILYLOGFILE" | grep Errors | awk '{ print $2 }'`
+    if [ "$BACKUPSTATUS" != "0" ]; then
+      echo "not flagging full backup since it failed"
+    elif [ "$FULL" = "full" ]; then
+        echo "$(date +%d%m%Y_%T) Full Back Done" >> $FULLBACKLOGFILE
+    fi
+
+    # Append the daily log file to the main log file
+    cat "$DAILYLOGFILE" >> $LOGFILE
+
+    # Reset the ENV variables. Don't need them sitting around
+    unset AWS_ACCESS_KEY_ID
+    unset AWS_SECRET_ACCESS_KEY
+    unset PASSPHRASE
+fi

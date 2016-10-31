@@ -1,32 +1,13 @@
 ---
-- hosts: localhost
-  roles:
-    - provision
-
 - hosts: pi
-  gather_facts: false
-  vars_files:
-    - vars/default.yml
+  gather_facts: true
   vars:
     host_domains: 'mail.{{domain}}'
     ldap_ip: '127.0.0.1'
     tls_cert_file_location: '/etc/letsencrypt/live/{{ host_domains.split(", ")[0] }}/fullchain.pem'
     tls_key_file_location: '/etc/letsencrypt/live/{{ host_domains.split(", ")[0] }}/privkey.pem'
-    fail2ban_postfix: true
-    fail2ban_dovecot: true
     ldap_user_searchbase: '{{ "ou=people,dc=" + domain.split(".") | join(",dc=") }}'
     ldap_service_searchbase: '{{ "ou=services,dc=" + domain.split(".") | join(",dc=") }}'
-    autossh: true
-    sshuttle: true
-  pre_tasks:
-    - name: add fake gateway so we can install tunnel
-      add_host: hostname=gateway ansible_host='127.0.0.1' ansible_user='ubuntu'
   roles:
-    - common
-    - vpn-client
-    - letsencrypt
-    - openldap
+    - provision
     - mail
-#    - calendarserver
-    - duplicity
-#    - configurator
