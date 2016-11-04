@@ -27,6 +27,6 @@
     - letsencrypt
     - openldap
     - mail
-#    - calendarserver
+    - calendarserver
     - duplicity
 #    - configurator
