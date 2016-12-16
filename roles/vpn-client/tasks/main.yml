@@ -3,7 +3,6 @@
     package:
       name: openvpn
       state: latest
-    become: yes
     tags:
       - packages
 
@@ -16,7 +15,6 @@
 
   - name: create openvpn static key
     command: openvpn --genkey --secret /etc/openvpn/static.key
-    become: yes
     when: openvpn_key.stat.exists != true and openvpn_static_key is not defined
     tags:
       - configuration
@@ -26,7 +24,6 @@
       content: "{{ openvpn_static_key }}"
       dest: /etc/openvpn/static.key
       mode: 0600
-    become: yes
     when: openvpn_key.stat.exists != true and openvpn_static_key is defined
     tags:
       - configuration
@@ -35,7 +32,6 @@
     command: cat /etc/openvpn/static.key
     tags:
       - configuration
-    become: yes
     register: static_key
 
   - name: write openvpn static key to ansible tmp
@@ -50,19 +46,16 @@
       src: openvpn-client.j2
       dest: /etc/openvpn/client.conf
       mode: 0600
-    become: yes
     tags:
       - configuration
 
   - name: enable vpn client
     command: systemctl enable openvpn
-    become: yes
     tags:
       - configuration
 
   - name: start vpn client
     command: systemctl start openvpn
-    become: yes
     tags:
       - configuration
     when: start_vpn is defined
