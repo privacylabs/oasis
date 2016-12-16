@@ -8,4 +8,4 @@ aws_instance_type: 't2.nano'
 #letsencrypt_staging: yes
 dns1: 208.67.222.222
 dns2: 208.67.220.220
-start_vpn: yes
+#start_vpn: yes
