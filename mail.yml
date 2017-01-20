@@ -9,4 +9,5 @@
     ldap_user_searchbase: '{{ "ou=people,dc=" + domain.split(".") | join(",dc=") }}'
     ldap_service_searchbase: '{{ "ou=services,dc=" + domain.split(".") | join(",dc=") }}'
   roles:
+    - provision
     - mail
