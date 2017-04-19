@@ -36,22 +36,22 @@ We have tested Ubuntu 14.04 and 16.04. Please install avahi-daemon for discoveri
 1. Connect your Pi to your laptop using a microUSB cable or to a power plug
 1. Log into your Pi - `$ ssh pi@raspberrypi.local` - the default password is 'raspberry'
 1. Change your password to a secure password - `$ passwd`
-  * We recommend using a password manager for generating and storing strong passwords
+    * We recommend using a password manager for generating and storing strong passwords
 1. Configure wifi on your Pi (https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md)
 
 ## Preparing your cloud configuration
 
 1. Create an account with AWS - sign up for 1 year of free tier services (https://aws.amazon.com/free/)
-  * Verify your account: https://portal.aws.amazon.com/billing/signup?redirect_url=https://aws.amazon.com/registration-confirmation#/identityverification
-  * Check your email for any additional verification steps and complete them as needed
-  * If you want to use the free tier service, you will need to edit group_vars/all/vars.yml and set instance_size to 't2.micro'. After your free service is over, this instance size will cost ~$10/month. You can automatically switch to a smaller instance that costs ~$5/month by changing the value back to 't2.nano' and re-running the playbook.
-  * If you already have an AWS account and have exhausted your free services, the services required to support Oasis are a t2.nano instance and a hosted zone. We estimate charges to be ~$5-6/month for a t2.nano with DNS services.
+    * Verify your account: https://portal.aws.amazon.com/billing/signup?redirect_url=https://aws.amazon.com/registration-confirmation#/identityverification
+    * Check your email for any additional verification steps and complete them as needed
+    * If you want to use the free tier service, you will need to edit group_vars/all/vars.yml and set instance_size to 't2.micro'. After your free service is over, this instance size will cost ~$10/month. You can automatically switch to a smaller instance that costs ~$5/month by changing the value back to 't2.nano' and re-running the playbook.
+    * If you already have an AWS account and have exhausted your free services, the services required to support Oasis are a t2.nano instance and a hosted zone. We estimate charges to be ~$5-6/month for a t2.nano with DNS services.
 1. Register a domain that will be used for email (e.g.: cooldomain.net)
-  * We suggest using Amazon Web Services (AWS) to skip manually configuring DNS. You will receive an email asking to verify your registration - click the link in the email.
-  * If you are using a domain registered with another service it is likely not using AWS for DNS and you will need to configure your domain to use AWS DNS services  (http://docs.aws.amazon.com/Route53/latest/DeveloperGuide/MigratingDNS.html)
+    * We suggest using Amazon Web Services (AWS) to skip manually configuring DNS. You will receive an email asking to verify your registration - click the link in the email.
+    * If you are using a domain registered with another service it is likely not using AWS for DNS and you will need to configure your domain to use AWS DNS services  (http://docs.aws.amazon.com/Route53/latest/DeveloperGuide/MigratingDNS.html)
 1. In the AWS web console, go to Identity Access and Management (IAM) and create a user account and save the credentials for the account (AWS_ACCESS_KEY and AWS_SECRET_ACCESS_KEY). (http://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console) You will need to assign the following permissions to the user under Managed Policies (http://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-using.html#attach-managed-policy-console)
-  * AmazonEC2FullAccess
-  * AmazonRoute53FullAccess
+    * AmazonEC2FullAccess
+    * AmazonRoute53FullAccess
 1. Submit a request to Amazon to get reverse DNS support after you have completed the Quickstart section below. This will help ensure mail deliverability. Your elastic IP address will be available in group_vars/all/vars.yml after you have completed the Quickstart. The reverse DNS record is mail.cooldomain.net where you replace cooldomain.net with your custom domain. For the Use Case Description section the form, you can enter "personal email gateway". (https://aws-portal.amazon.com/gp/aws/html-forms-controller/contactus/ec2-email-limit-rdns-request)
 
 
@@ -62,24 +62,24 @@ We have tested Ubuntu 14.04 and 16.04. Please install avahi-daemon for discoveri
 1. `$ cd oasis`
 1. Run the oasis script - `$ ./oasis.py --both`
 1. When prompted, carefully enter responses for the following values
-  * Domain - (e.g.: cooldomain.net)
-  * First Name (e.g.: Louis)
-  * Last Name (e.g.: Brandeis)
-  * Username - (e.g. louis, creates the email address louis@cooldomain.net)
-  * Password - We recommend using a password manager for generating and storing strong passwords
-  * Confirm Password
-  * AWS Access Key
-  * AWS Secret Access Key
+    * Domain - (e.g.: cooldomain.net)
+    * First Name (e.g.: Louis)
+    * Last Name (e.g.: Brandeis)
+    * Username - (e.g. louis, creates the email address louis@cooldomain.net)
+    * Password - We recommend using a password manager for generating and storing strong passwords
+    * Confirm Password
+    * AWS Access Key
+    * AWS Secret Access Key
 1. You will be prompted to specify a vault password. The vault password is used to encrypt the information you provided in the prompts above, along with some randomly generated passwords.
-  * We recommend using a password manager for generating and storing strong passwords
+    * We recommend using a password manager for generating and storing strong passwords
 1. After the vault password prompt, you will soon be prompted to accept the SSH key for the gateway. Type 'yes' and press 'Enter'. If execution fails after this point, you will need to edit your .ssh/known_hosts file and remove this host before running the playbooks again.
 1. Configure your mail (IMAP), calendar (CalDAV) and contacts (CardDAV) clients as follows from values you input when prompted during the install:
-  * username: louis
-  * password: strong_password_here
-  * server name: mail.cooldomain.net
-  * IMAP port: 993
-  * SMTP port: 587
-  * CalDAV and CardDAV port: 8443
+    * username: louis
+    * password: strong_password_here
+    * server name: mail.cooldomain.net
+    * IMAP port: 993
+    * SMTP port: 587
+    * CalDAV and CardDAV port: 8443
 
 
 # Development
