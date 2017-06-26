@@ -34,7 +34,7 @@
       ou: people
       bind_dn: '{{ admindn }}'
       bind_pw: '{{ ldapadminpassword }}'
-      server_uri: "ldap://localhost/"
+      server_uri: "ldap://directory/"
     become: yes
     tags:
       - configuration
@@ -47,7 +47,7 @@
       ou: groups
       bind_dn: '{{ admindn }}'
       bind_pw: '{{ ldapadminpassword }}'
-      server_uri: "ldap://localhost/"
+      server_uri: "ldap://directory/"
     with_items: [ 'groups', 'locations', 'resources', 'addresses' ]
     become: yes
     tags:
@@ -61,7 +61,7 @@
       ou: services
       bind_dn: '{{ admindn }}'
       bind_pw: '{{ ldapadminpassword }}'
-      server_uri: "ldap://localhost/"
+      server_uri: "ldap://directory/"
     become: yes
     tags:
       - configuration
