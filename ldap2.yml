@@ -1,0 +1,68 @@
+---
+- hosts: all
+  vars:
+    host_domains: 'mail.{{domain}}'
+    ldap_ip: 'localhost'
+    ldap_user_searchbase: '{{ "ou=people,dc=" + domain.split(".") | join(",dc=") }}'
+    ldap_service_searchbase: '{{ "ou=services,dc=" + domain.split(".") | join(",dc=") }}'
+  tasks:
+  - name: set admin user distinguished name
+    set_fact:
+      admindn: "{{ 'admin' | userdn(domain) }}"
+    tags:
+      - configuration
+      - packages
+
+  - name: set default admin distinguished name
+    set_fact:
+      defaultadmindn: "{{ 'admin' | userdn('default') }}"
+    tags:
+      - configuration
+      - packages
+
+  - name: set domain distinguished name
+    set_fact:
+      domaindn: "{{ domain | domaindn }}"
+    tags:
+      - configuration
+      - packages
+
+  - name: Create parent entry for users
+    ldap_entry:
+      dn: '{{ ldap_user_searchbase }}'
+      objectClass: organizationalUnit
+      ou: people
+      bind_dn: '{{ admindn }}'
+      bind_pw: '{{ ldapadminpassword }}'
+      server_uri: "ldap://localhost/"
+    become: yes
+    tags:
+      - configuration
+      - packages
+
+  - name: Create parent entry for groups, locations, resources, addresses
+    ldap_entry:
+      dn: 'ou={{ item }},{{ domaindn }}'
+      objectClass: organizationalUnit
+      ou: groups
+      bind_dn: '{{ admindn }}'
+      bind_pw: '{{ ldapadminpassword }}'
+      server_uri: "ldap://localhost/"
+    with_items: [ 'groups', 'locations', 'resources', 'addresses' ]
+    become: yes
+    tags:
+      - configuration
+      - packages
+
+  - name: Create parent entry for services using LDAP for auth
+    ldap_entry:
+      dn: '{{ ldap_service_searchbase }}'
+      objectClass: organizationalUnit
+      ou: services
+      bind_dn: '{{ admindn }}'
+      bind_pw: '{{ ldapadminpassword }}'
+      server_uri: "ldap://localhost/"
+    become: yes
+    tags:
+      - configuration
+      - packages
