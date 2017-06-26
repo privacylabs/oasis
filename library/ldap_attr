@@ -1,5 +1,31 @@
 #!/usr/bin/env python
 
+"""
+Copyright (c) 2014, Peter Sagerson
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+- Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+- Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+"""
+
 from traceback import format_exc
 
 import ldap
@@ -85,12 +111,12 @@ options:
 EXAMPLES = """
 # Configure directory number 1 for example.com.
 - ldap_attr: dn='olcDatabase={1}hdb,cn=config' name=olcSuffix values='dc=example,dc=com' state=exact
-  become: yes
+  sudo: true
 
 # Set up the ACL. The complex argument format is required here to pass a list
 # of ACL strings.
 - ldap_attr:
-  become: yes
+  sudo: true
   args:
     dn: olcDatabase={1}hdb,cn=config
     name: olcAccess
@@ -107,14 +133,14 @@ EXAMPLES = """
 
 # Declare some indexes.
 - ldap_attr: dn='olcDatabase={1}hdb,cn=config' name=olcDbIndex values={{ item }}
-  become: yes
+  sudo: true
   with_items:
     - objectClass eq
     - uid eq
 
 # Set up a root user, which we can use later to bootstrap the directory.
 - ldap_attr: dn='olcDatabase={1}hdb,cn=config' name={{ item.key }} values={{ item.value }} state=exact
-  become: yes
+  sudo: true
   with_dict:
     olcRootDN: 'cn=root,dc=example,dc=com'
     olcRootPW: '{SSHA}mRskON0Stk+5wO5K+MMk2xmakKt8h7eJ'
@@ -175,7 +201,7 @@ class LdapAttr(object):
         if not (isinstance(values, list) and all(isinstance(value, basestring) for value in values)):
             self.module.fail_json(msg="values must be a string or list of strings.")
 
-        return map(self._force_utf8, values)
+        return list(map(self._force_utf8, values))
 
     def _force_utf8(self, value):
         """ If value is unicode, encode to utf-8. """
