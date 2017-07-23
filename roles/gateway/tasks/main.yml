@@ -74,6 +74,7 @@
     become: yes
     tags:
        - build_ami
+       - provision_gateway
 
   - name: add openvpn static key to server
     copy:
@@ -101,3 +102,4 @@
     become: yes
     tags:
        - build_ami
+       - provision_gateway
