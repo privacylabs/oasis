@@ -4,3 +4,4 @@ data
 filter_plugins/helpers.pyc
 *.pem
 *-inventory
+**/__pycache__
